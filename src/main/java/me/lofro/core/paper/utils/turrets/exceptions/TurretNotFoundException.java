@@ -1,4 +1,4 @@
-package us.jcedeno.game.cannons.exceptions;
+package me.lofro.core.paper.utils.turrets.exceptions;
 
 public class TurretNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;

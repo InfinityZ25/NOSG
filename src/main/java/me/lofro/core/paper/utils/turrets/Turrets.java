@@ -1,4 +1,4 @@
-package us.jcedeno.game.cannons;
+package me.lofro.core.paper.utils.turrets;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,7 +9,7 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 import me.lofro.core.paper.utils.LineVector;
-import us.jcedeno.game.cannons.exceptions.TurretListEmptyException;
+import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
 
 /**
  * A class that holds the logic for GreenLight/RedLight turrets.
