@@ -1,14 +1,32 @@
 package me.lofro.core.paper;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Objects;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
-import com.google.gson.*;
 import lombok.Getter;
 import me.lofro.core.paper.commands.GameCMD;
 import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
+import me.lofro.core.paper.data.GameData;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.utils.JsonConfig;
@@ -20,17 +38,6 @@ import me.lofro.core.paper.utils.rapidinv.RapidInvManager;
 import me.lofro.core.paper.utils.strings.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.Location;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
 
 public class Main extends JavaPlugin {
 
@@ -46,9 +53,11 @@ public class Main extends JavaPlugin {
     {
         try {
             this.gameData = new JsonConfig("gameData.json",
-                    System.getProperty("user.dir") + File.separatorChar + Bukkit.getPluginsFolder() + File.separatorChar + this.getName());
+                    System.getProperty("user.dir") + File.separatorChar + Bukkit.getPluginsFolder() + File.separatorChar
+                            + this.getName());
             this.participantData = new JsonConfig("participantData.json",
-                    System.getProperty("user.dir") + File.separatorChar + Bukkit.getPluginsFolder() + File.separatorChar + this.getName());
+                    System.getProperty("user.dir") + File.separatorChar + Bukkit.getPluginsFolder() + File.separatorChar
+                            + this.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,8 +78,7 @@ public class Main extends JavaPlugin {
         game.getTimer().addPlayers();
 
         registerListeners(
-                new GlobalListener(this)
-        );
+                new GlobalListener(this));
 
         commandManager = new PaperCommandManager(this);
 
@@ -79,12 +87,14 @@ public class Main extends JavaPlugin {
                 new GameCMD(this),
                 new GreenLightCMD(this),
                 new HideSeekCMD(this),
-                new TurretTestCMD()
-        );
+                new TurretTestCMD());
 
         loadData();
 
         Bukkit.getLogger().info(Strings.format(game.getName() + "&aEl plugin ha sido iniciado correctamente."));
+
+        System.out.println(
+                new GameData("test").obtainGG());
     }
 
     @Override
@@ -165,7 +175,8 @@ public class Main extends JavaPlugin {
         try {
             JsonObject dataJsonObject = this.participantData.getJsonObject();
 
-            if (dataJsonObject == null) return;
+            if (dataJsonObject == null)
+                return;
 
             JsonArray playerJsonArray = dataJsonObject.getAsJsonArray("PLAYERS");
             JsonArray guardJsonArray = dataJsonObject.getAsJsonArray("GUARDS");
@@ -195,8 +206,10 @@ public class Main extends JavaPlugin {
                                 dead = entryValue.getAsBoolean();
                                 game.getParticipantDeadStates().put(name, dead);
 
-                                SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null) ?
-                                        new SquidParticipant(name, Game.Role.PLAYER, dead, Objects.requireNonNull(Bukkit.getPlayer(name)), instance) : new SquidParticipant(name, Game.Role.PLAYER, dead, instance);
+                                SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null)
+                                        ? new SquidParticipant(name, Game.Role.PLAYER, dead,
+                                                Objects.requireNonNull(Bukkit.getPlayer(name)), instance)
+                                        : new SquidParticipant(name, Game.Role.PLAYER, dead, instance);
                                 game.getParticipants().put(name, squidParticipant);
                             }
                         }
@@ -223,8 +236,10 @@ public class Main extends JavaPlugin {
                             dead = entryValue.getAsBoolean();
                             game.getParticipantDeadStates().put(name, dead);
 
-                            SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null) ?
-                                    new SquidParticipant(name, Game.Role.GUARD, dead, Objects.requireNonNull(Bukkit.getPlayer(name)), instance) : new SquidParticipant(name, Game.Role.GUARD, dead, instance);
+                            SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null)
+                                    ? new SquidParticipant(name, Game.Role.GUARD, dead,
+                                            Objects.requireNonNull(Bukkit.getPlayer(name)), instance)
+                                    : new SquidParticipant(name, Game.Role.GUARD, dead, instance);
                             game.getParticipants().put(name, squidParticipant);
                         }
                     }
@@ -249,9 +264,12 @@ public class Main extends JavaPlugin {
     public void loadDateData() {
         JsonObject gameDataJsonObject = this.gameData.getJsonObject();
 
-        if (gameDataJsonObject == null) return;
+        if (gameDataJsonObject == null)
+            return;
 
-        String date = (gameDataJsonObject.get("START_DATE") != null) ? gameDataJsonObject.get("START_DATE").getAsString() : Date.getDateForDayZero();
+        String date = (gameDataJsonObject.get("START_DATE") != null)
+                ? gameDataJsonObject.get("START_DATE").getAsString()
+                : Date.getDateForDayZero();
 
         game.setStartDate(LocalDate.parse(date));
         game.setStartDateString(date);
@@ -260,16 +278,18 @@ public class Main extends JavaPlugin {
 
     public void loadGreenLightData() {
 
-        //TODO HACER CON ARRAYS + REFACTOR PERRO.
+        // TODO HACER CON ARRAYS + REFACTOR PERRO.
 
         JsonObject gameDataJsonObject = this.gameData.getJsonObject();
 
-        if (gameDataJsonObject == null) return;
+        if (gameDataJsonObject == null)
+            return;
 
         JsonArray greenLightLoc1Array = gameDataJsonObject.getAsJsonArray("GREEN_LIGHT_LOCATION1");
         JsonArray greenLightLoc2Array = gameDataJsonObject.getAsJsonArray("GREEN_LIGHT_LOCATION2");
 
-        if (greenLightLoc1Array == null || greenLightLoc2Array == null) return;
+        if (greenLightLoc1Array == null || greenLightLoc2Array == null)
+            return;
 
         JsonElement firstIndex1 = greenLightLoc1Array.get(0);
         JsonElement secondIndex1 = greenLightLoc1Array.get(1);
@@ -279,9 +299,12 @@ public class Main extends JavaPlugin {
         JsonElement secondIndex2 = greenLightLoc2Array.get(1);
         JsonElement thirdIndex2 = greenLightLoc2Array.get(2);
 
-        Location firstLocation = new Location(game.getGreenLightGame().getWorld(), firstIndex1.getAsInt(),secondIndex1.getAsInt(),thirdIndex1.getAsInt());
-        Location secondLocation = new Location(game.getGreenLightGame().getWorld(), firstIndex2.getAsInt(),secondIndex2.getAsInt(),thirdIndex2.getAsInt());
-        Location gunLocation = Locations.getCubeCenter(game.getGreenLightGame().getWorld(), firstLocation, secondLocation);
+        Location firstLocation = new Location(game.getGreenLightGame().getWorld(), firstIndex1.getAsInt(),
+                secondIndex1.getAsInt(), thirdIndex1.getAsInt());
+        Location secondLocation = new Location(game.getGreenLightGame().getWorld(), firstIndex2.getAsInt(),
+                secondIndex2.getAsInt(), thirdIndex2.getAsInt());
+        Location gunLocation = Locations.getCubeCenter(game.getGreenLightGame().getWorld(), firstLocation,
+                secondLocation);
 
         game.getGreenLightGame().setCubeLocation1(firstLocation);
         game.getGreenLightGame().setCubeLocation2(secondLocation);
@@ -291,13 +314,15 @@ public class Main extends JavaPlugin {
 
     public void guardMessage(Component text) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (game.isGuard(player)) player.sendMessage(text);
+            if (game.isGuard(player))
+                player.sendMessage(text);
         });
     }
 
     public void adminMessage(Component text) {
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.isOp()) player.sendMessage(text);
+            if (player.isOp())
+                player.sendMessage(text);
         });
     }
 

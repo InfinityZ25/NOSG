@@ -1,5 +1,22 @@
 package me.lofro.core.paper.games;
 
+import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -11,22 +28,6 @@ import me.lofro.core.paper.utils.location.Locations;
 import me.lofro.core.paper.utils.strings.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
-
-import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,6 +39,8 @@ public class GreenLightGame extends BukkitRunnable {
     private @Getter @Setter Location cubeLocation1;
     private @Getter @Setter Location cubeLocation2;
     private @Getter Location cubeCenter;
+
+    private @Getter @Setter List<Location> turretLocations;
 
     private @Getter @Setter byte cubeDirection;
 
@@ -96,7 +99,8 @@ public class GreenLightGame extends BukkitRunnable {
     }
 
     public void runGame(int seconds) {
-        if (this.isRunning) return;
+        if (this.isRunning)
+            return;
 
         this.seconds = seconds;
         this.isRunning = true;
@@ -115,9 +119,10 @@ public class GreenLightGame extends BukkitRunnable {
         this.cancel();
         this.isRunning = false;
 
-        if (this.lightState.equals(LightState.GREEN_LIGHT)) instance.registerListener(greenLightListener);
+        if (this.lightState.equals(LightState.GREEN_LIGHT))
+            instance.registerListener(greenLightListener);
 
-        this.shootAllTaskID = Bukkit.getScheduler().runTaskLater(instance, () -> shootAll(true), 20*10).getTaskId();
+        this.shootAllTaskID = Bukkit.getScheduler().runTaskLater(instance, () -> shootAll(true), 20 * 10).getTaskId();
     }
 
     public void stopGame() {
@@ -142,7 +147,8 @@ public class GreenLightGame extends BukkitRunnable {
     public void greenLight(Boolean bool) {
         if (bool) {
             Bukkit.getOnlinePlayers().forEach(p -> {
-                p.showTitle(Title.title(Component.text(Strings.format("&a¡LUZ VERDE!")), Component.text(Strings.format("&aPuedes comenzar a moverte.")),
+                p.showTitle(Title.title(Component.text(Strings.format("&a¡LUZ VERDE!")),
+                        Component.text(Strings.format("&aPuedes comenzar a moverte.")),
                         Title.Times.of(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
                 p.playSound(p.getLocation(), "sfx.bell", 1, 1);
             });
@@ -152,7 +158,8 @@ public class GreenLightGame extends BukkitRunnable {
             instance.unregisterListener(greenLightListener);
         } else {
             Bukkit.getOnlinePlayers().forEach(p -> {
-                p.showTitle(Title.title(Component.text(Strings.format("&c¡LUZ ROJA!")), Component.text(Strings.format("&cNo muevas ni un pelo.")),
+                p.showTitle(Title.title(Component.text(Strings.format("&c¡LUZ ROJA!")),
+                        Component.text(Strings.format("&cNo muevas ni un pelo.")),
                         Title.Times.of(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
                 p.playSound(p.getLocation(), "sfx.bell", 1, 1);
             });
@@ -161,20 +168,23 @@ public class GreenLightGame extends BukkitRunnable {
                 this.timeBetween = ThreadLocalRandom.current().nextInt(10, 20);
                 this.lightState = LightState.RED_LIGHT;
                 instance.registerListener(greenLightListener);
-            },15);
+            }, 15);
         }
     }
 
     public void shoot(Player player) {
-        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || game.isDead(player)) return;
-        game.playSoundDistance(cubeCenter,150, "sfx.dramatic_gun_shots", 1f, 1f);
+        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE)
+                || game.isDead(player))
+            return;
+        game.playSoundDistance(cubeCenter, 150, "sfx.dramatic_gun_shots", 1f, 1f);
         player.setHealth(0);
     }
 
     public void shootAll(boolean endGame) {
         ArrayList<Player> playerList = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(p -> {
-            if (game.isPlayer(p) && !game.isDead(p) && Locations.isInCube(cubeLocation1.clone().add(21, 0, 0), cubeLocation2, p.getLocation())) {
+            if (game.isPlayer(p) && !game.isDead(p)
+                    && Locations.isInCube(cubeLocation1.clone().add(21, 0, 0), cubeLocation2, p.getLocation())) {
                 playerList.add(p);
             }
         });
@@ -183,8 +193,9 @@ public class GreenLightGame extends BukkitRunnable {
 
     public void loadGameCube() {
         setCubeLocation1((cubeLocation1 != null) ? cubeLocation1 : new Location(world, -20, -29, -35));
-        setCubeLocation2((cubeLocation2 != null) ? cubeLocation2 : new Location(world,  -146, 3, 18));
-        setCubeCenter2D((cubeCenter != null) ? cubeCenter : Locations.getCubeCenter(world, cubeLocation1, cubeLocation2));
+        setCubeLocation2((cubeLocation2 != null) ? cubeLocation2 : new Location(world, -146, 3, 18));
+        setCubeCenter2D(
+                (cubeCenter != null) ? cubeCenter : Locations.getCubeCenter(world, cubeLocation1, cubeLocation2));
     }
 
     public enum LightState {
@@ -197,7 +208,8 @@ public class GreenLightGame extends BukkitRunnable {
         private final BukkitTask task;
         private final boolean endGame;
 
-        public PlayerArrayQueueShootTask(JavaPlugin plugin, List<Player> players, boolean endGame, int delay, int period) {
+        public PlayerArrayQueueShootTask(JavaPlugin plugin, List<Player> players, boolean endGame, int delay,
+                int period) {
             playerQueue.addAll(players);
             this.task = Bukkit.getScheduler().runTaskTimer(plugin, this, delay, period);
             this.endGame = endGame;

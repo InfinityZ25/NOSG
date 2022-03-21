@@ -54,10 +54,11 @@ tasks {
         dependsOn(reobfJar)
     }
     compileJava {
-        options.compilerArgs.addAll(listOf("-parameters"))
+        options.compilerArgs.add("-parameters")
+        options.isFork=true
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
-       
+         
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name()
