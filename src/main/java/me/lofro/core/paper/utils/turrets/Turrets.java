@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.lofro.core.paper.utils.LineVector;
 import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
 
@@ -16,7 +18,8 @@ import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
  */
 public class Turrets {
 
-    private List<Location> turretLocations;
+    private @Getter List<Location> turretLocations;
+    private @Getter @Setter Particle particle;
 
     public Turrets() {
         this.turretLocations = new ArrayList<>();
@@ -38,7 +41,7 @@ public class Turrets {
 
         if (closestTurret != null) {
             // Display a particle trail from the player to the closest turret.
-            displayParticleTrail(playerLocation, closestTurret, t, Particle.CLOUD);
+            displayParticleTrail(playerLocation, closestTurret, t, particle);
         } else {
             // Throw exception
             throw new TurretListEmptyException();

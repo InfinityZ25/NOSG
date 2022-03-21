@@ -21,6 +21,9 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+
+
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -32,11 +35,11 @@ repositories {
 
 
 dependencies {
-    paperDevBundle("1.18.1-R0.1-SNAPSHOT")
+    paperDevBundle("1.18.2-R0.1-SNAPSHOT")
 
     compileOnly("com.comphenix.protocol:ProtocolLib:4.7.0")
 
-    implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
+    implementation("net.kyori:adventure-text-minimessage:4.10.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.22")
 	annotationProcessor("org.projectlombok:lombok:1.18.22")
@@ -51,8 +54,10 @@ tasks {
         dependsOn(reobfJar)
     }
     compileJava {
+        options.compilerArgs.addAll(listOf("-parameters"))
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
+       
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name()

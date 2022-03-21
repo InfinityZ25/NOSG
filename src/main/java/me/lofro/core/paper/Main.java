@@ -8,6 +8,7 @@ import me.lofro.core.paper.commands.GameCMD;
 import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
+import me.lofro.core.paper.commands.TurretTestCMD;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.utils.JsonConfig;
@@ -36,7 +37,7 @@ public class Main extends JavaPlugin {
     private static @Getter Main instance;
     private @Getter Game game;
     private @Getter PaperCommandManager commandManager;
-    private final @Getter static MiniMessage miniMessage = MiniMessage.get();
+    private final @Getter static MiniMessage miniMessage = MiniMessage.miniMessage();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private JsonConfig participantData;
@@ -77,7 +78,8 @@ public class Main extends JavaPlugin {
                 new SquidCMD(this),
                 new GameCMD(this),
                 new GreenLightCMD(this),
-                new HideSeekCMD(this)
+                new HideSeekCMD(this),
+                new TurretTestCMD()
         );
 
         loadData();
