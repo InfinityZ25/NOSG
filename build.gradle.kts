@@ -22,6 +22,7 @@ java {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://repo.codemc.io/repository/nms/")
     maven("https://libraries.minecraft.net/")
