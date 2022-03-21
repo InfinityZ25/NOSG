@@ -12,7 +12,7 @@ public class SquidParticipant {
 
     private @Getter @Setter String name;
     private @Getter Role role;
-    private @Getter boolean dead = false;
+    private @Getter boolean dead;
     private @Getter Player player;
     private final @Getter Main instance;
 
@@ -44,13 +44,13 @@ public class SquidParticipant {
 
     public void setRole(Role role) {
         this.role = role;
-        instance.getGame().getParticipantRoles().remove(name);
-        instance.getGame().getParticipantRoles().put(name, role);
+        instance.getGame().getParticipantRoles().put(this.name, role);
+        if (player != null) instance.getGame().loadParticipant(player);
     }
 
     public void setDead(boolean dead) {
         this.dead = dead;
-        instance.getGame().getParticipantDeadStates().remove(name);
-        instance.getGame().getParticipantDeadStates().put(name, dead);
+        instance.getGame().getParticipantDeadStates().put(this.name, dead);
+        instance.getGame().getParticipants().put(name, this);
     }
 }

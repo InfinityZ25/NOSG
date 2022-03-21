@@ -1,4 +1,4 @@
-package me.lofro.core.paper.utils.persistentDataContainers;
+package me.lofro.core.paper.utils.datacontainers;
 
 import org.bukkit.entity.Player;
 

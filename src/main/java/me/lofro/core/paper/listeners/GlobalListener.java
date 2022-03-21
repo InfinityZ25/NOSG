@@ -1,24 +1,29 @@
 package me.lofro.core.paper.listeners;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.lofro.core.paper.Game;
 import me.lofro.core.paper.events.GameTickEvent;
 import me.lofro.core.paper.objects.SquidPlayer;
 import me.lofro.core.paper.objects.Timer;
-import me.lofro.core.paper.utils.persistentDataContainers.Data;
-import me.lofro.core.paper.utils.persistentDataContainers.PlayerIsNotOnlineException;
+import me.lofro.core.paper.utils.datacontainers.Data;
+import me.lofro.core.paper.utils.datacontainers.PlayerIsNotOnlineException;
 import me.lofro.core.paper.utils.strings.Strings;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.data.Rotatable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import me.lofro.core.paper.Main;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -28,6 +33,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class GlobalListener implements Listener {
@@ -47,7 +53,7 @@ public class GlobalListener implements Listener {
 
         e.joinMessage(null);
 
-        instance.adminMessage(Strings.format("&7El jugador &8" + name + " &7ha entrado al servidor."));
+        instance.guardMessage(Component.text(Strings.format("&7El jugador &6" + name + " &7ha entrado al servidor.")));
 
         game.loadParticipant(player);
         player.playSound(player.getLocation(), "sfx.server_join", 1, 1);
@@ -63,10 +69,20 @@ public class GlobalListener implements Listener {
 
         e.quitMessage(null);
 
-        instance.adminMessage(Strings.format("&7El jugador &8" + name + " &7ha abandonado el servidor."));
+        instance.guardMessage(Component.text(Strings.format("&7El jugador &8" + name + " &7ha abandonado el servidor.")));
 
         Timer timer = game.getTimer();
         timer.removePlayer(player);
+    }
+
+    @EventHandler
+    public void onChat(AsyncChatEvent e) {
+        Player player = e.getPlayer();
+
+        e.setCancelled(true);
+
+        if (game.isGuard(player)) instance.guardMessage(Strings.componentFormat("&cGUARDS &8| &7" + player.getName() + " &8| &8&l>> &7"
+                + PlainTextComponentSerializer.plainText().serialize(e.message())));
     }
 
     @EventHandler
@@ -79,6 +95,7 @@ public class GlobalListener implements Listener {
         try {
             PersistentDataContainer dataContainer = Data.getData(player);
             Data.set(dataContainer, "DEATH_LOCATION", PersistentDataType.INTEGER_ARRAY, new int[]{deathLocation.getBlockX(), deathLocation.getBlockY(), deathLocation.getBlockZ()});
+            Data.set(dataContainer, "DEATH_LOCATION_ROTATION", PersistentDataType.FLOAT, player.getLocation().getYaw());
         } catch (PlayerIsNotOnlineException ex) {
             ex.printStackTrace();
         }
@@ -91,14 +108,14 @@ public class GlobalListener implements Listener {
         int id = squidPlayer.getId();
 
         player.setGameMode(GameMode.SPECTATOR);
+        if (game.isDead(player)) return;
+
         squidPlayer.setDead(true);
 
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            online.playSound(online.getLocation(), "sfx.elimination", 1,1);
-        }
+        Bukkit.getOnlinePlayers().forEach(online -> online.playSound(online.getLocation(), "sfx.elimination", 1,1));
 
         Bukkit.broadcast(Component.text(Strings.format("&bEl jugador &3#" + id + " " + name + " &bha sido eliminado.")));
-        Bukkit.getScheduler().runTaskLater(instance, () -> player.banPlayer(Strings.format("&bHAS SIDO &3ELIMINADO&b.")), 20*5);
+        //Bukkit.getScheduler().runTaskLater(instance, () -> player.banPlayer(Strings.format("&bHAS SIDO &3ELIMINADO&b.")), 20*5);
 
         setSkullOnGround(player, deathLocation);
     }
@@ -110,7 +127,9 @@ public class GlobalListener implements Listener {
         try {
             PersistentDataContainer persistentDataContainer = Data.getData(player);
             int[] locationBlocks = Data.get(persistentDataContainer,"DEATH_LOCATION", PersistentDataType.INTEGER_ARRAY);
+            float yaw = Data.get(persistentDataContainer, "DEATH_LOCATION_ROTATION", PersistentDataType.FLOAT);
             Location respawnLocation = new Location(player.getWorld(), locationBlocks[0], locationBlocks[1], locationBlocks[2]);
+            respawnLocation.setYaw(yaw);
 
             e.setRespawnLocation(respawnLocation);
         } catch (PlayerIsNotOnlineException ex) {
@@ -119,7 +138,7 @@ public class GlobalListener implements Listener {
     }
 
     @EventHandler
-    public void onFood(FoodLevelChangeEvent e){
+    public void onFood(FoodLevelChangeEvent e) {
         Player player = (Player) e.getEntity();
         if(!player.hasPotionEffect(PotionEffectType.SATURATION) && !player.hasPotionEffect(PotionEffectType.HUNGER)){
             e.setCancelled(true);
@@ -138,6 +157,78 @@ public class GlobalListener implements Listener {
             }
 
         });
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        Entity entity = e.getEntity();
+        Entity damager = e.getDamager();
+
+        if (entity instanceof Player player) {
+            String name = player.getName();
+            HashMap<String, Game.Role> roles = game.getParticipantRoles();
+
+            Game.PvPState pvPState = game.getPvPState();
+
+            Game.Role pRole = roles.get(name);
+
+            if (damager instanceof Player playerDamager) {
+                String playerDamagerName = playerDamager.getName();
+
+                Game.Role dRole = roles.get(playerDamagerName);
+
+                switch (pvPState) {
+                    case GUARDS -> {
+                        //Player to player.
+                        if (pRole == Game.Role.PLAYER && dRole == pRole) {
+                            e.setCancelled(true);
+                            break;
+                        }
+                        //Guard to guard.
+                        if (pRole == Game.Role.GUARD && dRole == pRole) {
+                            e.setCancelled(true);
+                            break;
+                        }
+                        //Player to guard.
+                        if (dRole == Game.Role.PLAYER && pRole == Game.Role.GUARD) {
+                            e.setCancelled(true);
+                        }
+                    }
+                    case NONE -> e.setCancelled(true);
+                }
+            } else if (damager instanceof Projectile projectile) {
+                if (projectile.getShooter() instanceof Player pShooter) {
+                    String pShooterName = pShooter.getName();
+
+                    Game.Role pShooterRole = roles.get(pShooterName);
+
+                    switch (pvPState) {
+                        case GUARDS -> {
+                            //Player to player.
+                            if (pRole == Game.Role.PLAYER && pShooterRole == pRole) {
+                                e.setCancelled(true);
+                                break;
+                            }
+                            //Guard to guard.
+                            if (pRole == Game.Role.GUARD && pShooterRole == pRole) {
+                                e.setCancelled(true);
+                                break;
+                            }
+                            //Player to guard.
+                            if (pShooterRole == Game.Role.PLAYER && pRole == Game.Role.GUARD) {
+                                e.setCancelled(true);
+                                break;
+                            }
+
+                            e.setDamage(1000);
+                        }
+                        case NONE -> e.setCancelled(true);
+                        default -> e.setDamage(1000);
+                    }
+                }
+            }
+        }
+
     }
 
     public void setSkullOnGround(Player player, Location location) {

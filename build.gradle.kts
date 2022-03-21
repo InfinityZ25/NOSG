@@ -70,7 +70,7 @@ tasks {
 }
 
 bukkit {
-    name = "SquidGame"
+    name = "SquidOtakuGame"
     version = "1.0"
     apiVersion = "1.18"
     main = "me.lofro.core.paper.Main"

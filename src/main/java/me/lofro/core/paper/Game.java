@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.lofro.core.paper.events.GameTickEvent;
 import me.lofro.core.paper.games.GreenLightGame;
+import me.lofro.core.paper.games.HideSeekGame;
 import me.lofro.core.paper.objects.SquidGuard;
 import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.objects.SquidPlayer;
@@ -31,7 +32,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class Game extends BukkitRunnable {
 
-    private final @Getter String name = Strings.format("&d&lSquid&f&lGames &7>> &r");
+    private final @Getter String name = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
 
     private @Getter Day day;
     private @Getter @Setter LocalDate startDate;
@@ -51,8 +52,11 @@ public class Game extends BukkitRunnable {
     private @Getter HashMap<String, SquidParticipant> participants = new HashMap<>();
 
     private @Getter @Setter GreenLightGame greenLightGame;
+    private @Getter @Setter HideSeekGame hideSeekGame;
 
     private Timer timer;
+
+    private @Getter @Setter PvPState pvPState = PvPState.GUARDS;
 
     public Game(Main instance) {
         this.instance = instance;
@@ -61,6 +65,7 @@ public class Game extends BukkitRunnable {
         this.timer = new Timer(instance, (int) gameTime);
 
         this.greenLightGame = new GreenLightGame(instance, Bukkit.getWorld("world"), this);
+        this.hideSeekGame = new HideSeekGame(instance, this);
     }
 
     public JsonObject getParticipantJObject() {
@@ -92,6 +97,7 @@ public class Game extends BukkitRunnable {
         return jsonObject;
     }
 
+    // TODO REFACTOR.
     public JsonObject getGameDataJsonObject() {
         JsonObject jsonObject = new JsonObject();
 
@@ -105,7 +111,7 @@ public class Game extends BukkitRunnable {
         JsonArray greenLightCubeLocation2Array = new JsonArray();
         greenLightCubeLocation2Array.add((greenLightGame.getCubeLocation2() != null) ? greenLightGame.getCubeLocation2().getX() : -146);
         greenLightCubeLocation2Array.add((greenLightGame.getCubeLocation2() != null) ? greenLightGame.getCubeLocation2().getY() : 3);
-        greenLightCubeLocation2Array.add((greenLightGame.getCubeLocation2() != null) ? greenLightGame.getCubeLocation2().getZ() : 17);
+        greenLightCubeLocation2Array.add((greenLightGame.getCubeLocation2() != null) ? greenLightGame.getCubeLocation2().getZ() : 18);
 
         jsonObject.add("GREEN_LIGHT_LOCATION1", greenLightCubeLocation1Array);
         jsonObject.add("GREEN_LIGHT_LOCATION2", greenLightCubeLocation2Array);
@@ -165,7 +171,7 @@ public class Game extends BukkitRunnable {
             switch(role) {
                 case PLAYER -> {
 
-                    player.setGameMode(GameMode.ADVENTURE);
+                    if (!dead) player.setGameMode(GameMode.ADVENTURE);
 
                     if (this.players.containsKey(name)) return;
 
@@ -201,7 +207,7 @@ public class Game extends BukkitRunnable {
         switch(role) {
             case PLAYER -> {
 
-                player.setGameMode(GameMode.ADVENTURE);
+                if (!dead) player.setGameMode(GameMode.ADVENTURE);
 
                 if (this.players.containsKey(name)) return;
 
@@ -222,8 +228,6 @@ public class Game extends BukkitRunnable {
                 this.players.remove(name);
                 this.guards.put(name, squidGuard);
                 this.participants.put(name, squidParticipant);
-
-                player.setGameMode(GameMode.CREATIVE);
             }
         }
     }
@@ -296,6 +300,8 @@ public class Game extends BukkitRunnable {
         return this.participantRoles.get(player.getName()) == Role.GUARD;
     }
 
+    public boolean isDead(Player player) {return this.participantDeadStates.get(player.getName());}
+
     @Override
     public void run() {
         var newTime = (int) (Math.floor((System.currentTimeMillis() - startTime) / 1000.0));
@@ -313,6 +319,6 @@ public class Game extends BukkitRunnable {
     }
 
     public enum PvPState {
-        ALL, GUARDS, PLAYERS
+        ALL, NONE, GUARDS
     }
 }

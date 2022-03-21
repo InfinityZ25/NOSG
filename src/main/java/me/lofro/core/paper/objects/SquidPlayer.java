@@ -29,10 +29,22 @@ public class SquidPlayer extends SquidParticipant {
         getInstance().getGame().getPlayerIds().putIfAbsent(name, id);
     }
 
+    @Override
+    public void setRole(Game.Role role) {
+        super.setRole(role);
+        getInstance().getGame().getPlayers().put(getName(), this);
+    }
+
+    @Override
+    public void setDead(boolean dead) {
+        super.setDead(dead);
+        getInstance().getGame().getPlayers().put(getName(), this);
+    }
+
     public void setId(int id) {
         this.id = id;
-        getInstance().getGame().getPlayerIds().remove(getName());
         getInstance().getGame().getPlayerIds().put(getName(), id);
+        getInstance().getGame().getPlayers().put(getName(), this);
     }
 
 }

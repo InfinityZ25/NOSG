@@ -17,7 +17,7 @@ public class Frames {
         List<Character> chars = new ArrayList<>();
 
         while (from <= until) {
-            chars.add(Character.valueOf((char) ('\uE000' + from++)));
+            chars.add((char) ('\uE000' + from++));
         }
 
         return chars;
@@ -26,7 +26,7 @@ public class Frames {
     /**
      * Obtains the Unicode representation of a character.
      * 
-     * @param c Chracter
+     * @param c Character
      * @return String Unicode representation of the character
      */
     public static String getUnicodeRepresentation(Character c) {
@@ -34,7 +34,7 @@ public class Frames {
     }
 
     /**
-     * Obtains all the unicode characters from \uE000 to \uE999 and it only uses
+     * Obtains all the unicode characters from \uE000 to \uE999, and it only uses
      * integers.
      * 
      * @param from  Initial Integer
@@ -62,7 +62,7 @@ public class Frames {
     /**
      * From
      * https://stackoverflow.com/questions/3537706/how-to-unescape-a-java-string-literal-in-java
-     * 
+     *
      * @param oldstr
      * @return
      */

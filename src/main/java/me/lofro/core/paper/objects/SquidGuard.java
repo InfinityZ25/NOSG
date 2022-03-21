@@ -20,4 +20,16 @@ public class SquidGuard extends SquidParticipant {
         super(name, Game.Role.GUARD, dead, player, instance);
     }
 
+    @Override
+    public void setRole(Game.Role role) {
+        super.setRole(role);
+        getInstance().getGame().getGuards().put(getName(), this);
+    }
+
+    @Override
+    public void setDead(boolean dead) {
+        super.setDead(dead);
+        getInstance().getGame().getGuards().put(getName(), this);
+    }
+
 }

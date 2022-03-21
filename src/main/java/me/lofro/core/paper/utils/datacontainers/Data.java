@@ -1,4 +1,4 @@
-package me.lofro.core.paper.utils.persistentDataContainers;
+package me.lofro.core.paper.utils.datacontainers;
 
 import me.lofro.core.paper.Main;
 import org.bukkit.NamespacedKey;
@@ -19,7 +19,6 @@ public class Data {
         return dataHolder.getPersistentDataContainer();
     }
 
-
     public static <T> void set(@Nonnull PersistentDataContainer data, String key, PersistentDataType<T, T> type, T value) {
         data.set(key(key), type, value);
     }
@@ -28,7 +27,6 @@ public class Data {
         return data.get(key(key), type);
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static <T> boolean has(@Nonnull PersistentDataContainer data, String key, PersistentDataType<T, T> type) {
         return data.has(key(key), type);
     }

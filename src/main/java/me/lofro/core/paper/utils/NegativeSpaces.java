@@ -87,7 +87,6 @@ public class NegativeSpaces {
         negativeSpaces.put(256, Character.toString('\uF82D'));
         negativeSpaces.put(512, Character.toString('\uF82E'));
         negativeSpaces.put(1024, Character.toString('\uF82F'));
-        
     }
     
 }

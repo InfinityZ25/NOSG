@@ -70,9 +70,7 @@ public class Timer {
     }
 
     public void addPlayers() {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            this.bossBar.addPlayer(online);
-        }
+        Bukkit.getOnlinePlayers().forEach(this.bossBar::addPlayer);
     }
 
     public void removePlayer(Player player) {
@@ -80,16 +78,18 @@ public class Timer {
     }
 
     public void removePlayers() {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            this.bossBar.removePlayer(online);
-        }
+        Bukkit.getOnlinePlayers().forEach(this.bossBar::removePlayer);
+    }
+
+    public void updateTime(int seconds) {
+        this.time = timeConvert(seconds);
+        this.seconds = seconds;
+        this.startTime = (int) instance.getGame().getGameTime();
     }
 
     public void start(int seconds) {
         setPreStart(seconds);
-        this.time = timeConvert(seconds);
-        this.seconds = seconds;
-        this.startTime = (int) instance.getGame().getGameTime();
+        updateTime(seconds);
         this.isActive = true;
         this.bossBar.setVisible(true);
         addPlayers();

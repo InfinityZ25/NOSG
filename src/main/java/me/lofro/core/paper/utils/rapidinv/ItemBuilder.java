@@ -177,6 +177,16 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setUnbreakable(Boolean bool) {
+        this.meta.setUnbreakable(bool);
+        return this;
+    }
+
+    public ItemBuilder setCustomModelData(int data) {
+        this.meta.setCustomModelData(data);
+        return this;
+    }
+
     public ItemBuilder removeFlags() {
         return removeFlags(ItemFlag.values());
     }

@@ -14,4 +14,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "SquidGame"
+rootProject.name = "SquidOtakuGame"
