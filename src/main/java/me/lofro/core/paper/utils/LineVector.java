@@ -49,6 +49,17 @@ public @Data @AllArgsConstructor(staticName = "of") class LineVector {
      * @return A list of points.
      */
     public List<Vector> getPointsInBetween() {
+        return getPointsInBetween(interval);
+    }
+
+    /**
+     * Returns all the points that are on the line vector UV.
+     * 
+     * @param interval The interval between each point.
+     * 
+     * @return A list of points.
+     */
+    public List<Vector> getPointsInBetween(final double interval) {
         // Calculate the uv vector
         var uv = getVUVector().normalize();
         // Create a vector array of the length of the distance between the two points
