@@ -26,6 +26,7 @@ import me.lofro.core.paper.Main;
 import me.lofro.core.paper.listeners.GreenLightListener;
 import me.lofro.core.paper.utils.location.Locations;
 import me.lofro.core.paper.utils.strings.Strings;
+import me.lofro.core.paper.utils.turrets.Turrets;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 
@@ -40,7 +41,7 @@ public class GreenLightGame extends BukkitRunnable {
     private @Getter @Setter Location cubeLocation2;
     private @Getter Location cubeCenter;
 
-    private @Getter @Setter List<Location> turretLocations;
+    private @Getter Turrets turrets;
 
     private @Getter @Setter byte cubeDirection;
 
@@ -76,6 +77,8 @@ public class GreenLightGame extends BukkitRunnable {
         this.game = game;
         this.greenLightListener = new GreenLightListener(instance, game);
         this.timeBetween = ThreadLocalRandom.current().nextInt(3, 10);
+        // Turrets logic
+        this.turrets = new Turrets();
     }
 
     @Override

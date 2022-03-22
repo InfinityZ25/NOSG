@@ -6,13 +6,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import org.bukkit.Location;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.lofro.core.paper.data.LocationSerializer;
 
 public class JsonConfig {
-    private static final Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationSerializer())
+            .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer()).setPrettyPrinting()
+            .serializeNulls()
+            .create();
 
     private @Getter @Setter JsonObject jsonObject = new JsonObject();
     private final @Getter File file;

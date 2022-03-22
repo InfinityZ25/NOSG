@@ -26,7 +26,6 @@ import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
-import me.lofro.core.paper.data.GameData;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.utils.JsonConfig;
@@ -48,7 +47,7 @@ public class Main extends JavaPlugin {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private JsonConfig participantData;
-    private JsonConfig gameData;
+    private @Getter JsonConfig gameData;
 
     {
         try {
@@ -87,14 +86,12 @@ public class Main extends JavaPlugin {
                 new GameCMD(this),
                 new GreenLightCMD(this),
                 new HideSeekCMD(this),
-                new TurretTestCMD());
+                new TurretTestCMD(game.getGreenLightGame().getTurrets()));
 
         loadData();
 
         Bukkit.getLogger().info(Strings.format(game.getName() + "&aEl plugin ha sido iniciado correctamente."));
 
-        System.out.println(
-                new GameData("test").obtainGG());
     }
 
     @Override

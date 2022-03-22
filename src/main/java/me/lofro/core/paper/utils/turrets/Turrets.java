@@ -19,7 +19,7 @@ import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
 public class Turrets {
 
     private @Getter List<Location> turretLocations;
-    private @Getter @Setter Particle particle;
+    private @Getter @Setter Particle particle = Particle.REDSTONE;
 
     public Turrets() {
         this.turretLocations = new ArrayList<>();

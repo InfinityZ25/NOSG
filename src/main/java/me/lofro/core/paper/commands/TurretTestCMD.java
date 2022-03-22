@@ -1,5 +1,9 @@
 package me.lofro.core.paper.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,15 +13,22 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
+import me.lofro.core.paper.Main;
+import me.lofro.core.paper.data.GData;
+import me.lofro.core.paper.data.LocationSerializer;
 import me.lofro.core.paper.utils.turrets.Turrets;
 import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
 
 @CommandAlias("turrets")
 public class TurretTestCMD extends BaseCommand {
+    private Gson gson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationSerializer())
+            .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer()).setPrettyPrinting()
+            .serializeNulls()
+            .create();
     private Turrets turrets;
 
-    public TurretTestCMD() {
-        this.turrets = new Turrets();
+    public TurretTestCMD(Turrets turrets) {
+        this.turrets = turrets;
     }
 
     @Subcommand("add")
@@ -34,6 +45,7 @@ public class TurretTestCMD extends BaseCommand {
             sender.sendMessage("No turrets found.");
         }
     }
+
     @CommandCompletion("{particle}")
     @Subcommand("particle")
     public void setParticle(CommandSender sender, String particle) {
@@ -49,10 +61,41 @@ public class TurretTestCMD extends BaseCommand {
         this.turrets.getTurretLocations().remove(this.turrets.getTurretLocations().size() - 1);
     }
 
-    @Subcommand("reser")
+    @Subcommand("reset")
     public void reset(CommandSender sender) {
         this.turrets.getTurretLocations().clear();
         sender.sendMessage("Cleaned all locations.");
+    }
+
+    @Subcommand("list")
+    public void listAll(CommandSender sender) {
+        sender.sendMessage("Turret Locations: " + gson.toJson(turrets.getTurretLocations()));
+
+    }
+
+    @Subcommand("gdata save")
+    public void backupData(CommandSender sender) {
+
+        sender.sendMessage("Attempting to backup data...");
+
+        var gdata = new GData();
+
+        gdata.backupData(Main.getInstance().getGame());
+
+        sender.sendMessage("Should've worked");
+
+    }
+
+    @Subcommand("gdata load")
+    public void loadData(CommandSender sender) {
+
+        sender.sendMessage("Attempting to read data...");
+
+        var gdata = new GData();
+
+       var innerData= gdata.loadData(Main.getInstance().getGameData());
+       
+
     }
 
 }
