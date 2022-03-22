@@ -1,4 +1,4 @@
-package me.lofro.core.paper.objects;
+package us.jcedeno.game.players.objects;
 
 import javax.annotation.Nonnull;
 
@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.lofro.core.paper.Game.Role;
+import us.jcedeno.game.players.enums.Role;
 
 public class SquidParticipant {
 

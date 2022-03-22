@@ -12,6 +12,7 @@ import me.lofro.core.paper.Game;
 import me.lofro.core.paper.utils.JsonConfig;
 
 public class GData {
+
     private Gson gson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationSerializer())
             .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer()).setPrettyPrinting()
             .serializeNulls()
@@ -23,6 +24,8 @@ public class GData {
     public static class InnerGData {
         String date;
         GreenLightData greenLightData;
+        int time = 10;
+        double health = 20f;
 
         public InnerGData(String date, GreenLightData greenLightData) {
             this.date = date;
@@ -65,7 +68,7 @@ public class GData {
 
     public InnerGData loadData(final JsonConfig config) {
 
-        var restoredFile = gson.fromJson(config.getJsonObject().toString(), InnerGData.class);
+        var restoredFile = gson.fromJson(config.getJsonObject(), InnerGData.class);
         System.out.println("Inner: " + gson.toJson(restoredFile));
 
         return restoredFile;

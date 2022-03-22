@@ -16,6 +16,7 @@ import co.aikar.commands.annotation.Subcommand;
 import me.lofro.core.paper.Main;
 import me.lofro.core.paper.data.GData;
 import me.lofro.core.paper.data.LocationSerializer;
+import me.lofro.core.paper.data.PData;
 import me.lofro.core.paper.utils.turrets.Turrets;
 import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
 
@@ -93,9 +94,26 @@ public class TurretTestCMD extends BaseCommand {
 
         var gdata = new GData();
 
-       var innerData= gdata.loadData(Main.getInstance().getGameData());
-       
+        var innerData = gdata.loadData(Main.getInstance().getGameData());
 
+    }
+
+    @Subcommand("pdata save")
+    public void pData(CommandSender sender) {
+        var game = Main.getInstance().getGame();
+        var pdata = new PData(game.getPlayers().values().stream().toList(),
+                game.getGuards().values().stream().toList());
+
+        pdata.backupData(game);
+    }
+
+    @Subcommand("pdata load")
+    public void pDataLoad(CommandSender sender) {
+        var pdata = new PData(null, null);
+
+        pdata = pdata.fromJson(Main.getInstance().getParticipantData());
+
+        sender.sendMessage("Loaded data: " + Main.getGson().toJson(pdata));
     }
 
 }

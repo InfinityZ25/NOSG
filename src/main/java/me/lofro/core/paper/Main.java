@@ -26,6 +26,7 @@ import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
+import me.lofro.core.paper.data.LocationSerializer;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.utils.JsonConfig;
@@ -44,9 +45,14 @@ public class Main extends JavaPlugin {
     private @Getter Game game;
     private @Getter PaperCommandManager commandManager;
     private final @Getter static MiniMessage miniMessage = MiniMessage.miniMessage();
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private @Getter static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Location.class, new LocationSerializer())
+            .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer())
+            .setPrettyPrinting()
+            .serializeNulls()
+            .create();
 
-    private JsonConfig participantData;
+    private @Getter JsonConfig participantData;
     private @Getter JsonConfig gameData;
 
     {

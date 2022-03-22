@@ -1,23 +1,23 @@
-package me.lofro.core.paper.objects;
+package us.jcedeno.game.players.objects;
 
 import javax.annotation.Nonnull;
 
 import org.bukkit.entity.Player;
 
-import me.lofro.core.paper.Game;
+import us.jcedeno.game.players.enums.Role;
 
 public class SquidGuard extends SquidParticipant {
 
     public SquidGuard(@Nonnull String name) {
-        super(name, Game.Role.GUARD);
+        super(name, Role.GUARD);
     }
 
     public SquidGuard(@Nonnull String name, boolean dead) {
-        super(name, Game.Role.GUARD, dead);
+        super(name, Role.GUARD, dead);
     }
 
     public SquidGuard(@Nonnull String name, boolean dead, @Nonnull Player player) {
-        super(name, Game.Role.GUARD, dead, player);
+        super(name, Role.GUARD, dead, player);
     }
 
 }
