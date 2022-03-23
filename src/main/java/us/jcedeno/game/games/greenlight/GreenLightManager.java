@@ -23,15 +23,13 @@ public class GreenLightManager {
 
     private @Getter final GameManager gManager;
 
+    private @Getter GreenLightGame greenLightGame;
+
     private @Getter Location firstCubeLocation;
     private @Getter Location secondCubeLocation;
     private @Getter Location cubeCenter;
 
     private Vector cubeCenter2D;
-
-    public Vector getCubeCenter2D() {
-        return cubeCenter2D.clone();
-    }
 
     private @Getter @Setter LightState lightState;
 
@@ -40,26 +38,79 @@ public class GreenLightManager {
     private final @Getter PreLightGameListener preGameListener;
     private final @Getter GreenLightListener greenLightListener;
 
-    private @Getter @Setter int lowestTimeBound;
-    private @Getter @Setter int highestTimeBound;
+    private @Getter @Setter int greenLowestTimeBound;
+    private @Getter @Setter int greenHighestTimeBound;
+
+    private @Getter @Setter int redLowestTimeBound;
+    private @Getter @Setter int redHighestTimeBound;
 
     private @Getter final World world;
 
-    public GreenLightManager(GameManager gManager, int lowestTimeBound, int highestTimeBound, World world) {
+    public GreenLightManager(GameManager gManager, World world) {
         this.gManager = gManager;
         this.preGameListener = new PreLightGameListener(this);
         this.greenLightListener = new GreenLightListener(this);
-        this.lowestTimeBound = lowestTimeBound;
-        this.highestTimeBound = highestTimeBound;
         this.world = world;
+        this.greenLightGame = new GreenLightGame(this);
     }
 
-    public void setPreStart() {
-        gManager.getSquidInstance().registerListener(preGameListener);
+    public GreenLightManager(GameManager gManager, int greenLowestTimeBound, int greenHighestTimeBound, int redLowestTimeBound, int redHighestTimeBound, World world) {
+        this.gManager = gManager;
+        this.preGameListener = new PreLightGameListener(this);
+        this.greenLightListener = new GreenLightListener(this);
+        this.greenLowestTimeBound = greenLowestTimeBound;
+        this.greenHighestTimeBound = greenHighestTimeBound;
+        this.redLowestTimeBound = redLowestTimeBound;
+        this.redHighestTimeBound = redHighestTimeBound;
+        this.world = world;
+        this.greenLightGame = new GreenLightGame(this);
+    }
 
+    public void preStart() {
         this.lightState = LightState.PRE_START;
 
+        gManager.getSquidInstance().registerListener(preGameListener);
+
         //TODO EXTRA FUNCTIONS.
+    }
+
+    public void runGame(int seconds) {
+        if (this.isRunning) throw new IllegalStateException("The game " + greenLightGame.getClass().getSimpleName() + " is already running.");
+
+        this.isRunning = true;
+
+        //TODO TIMER START;
+
+        greenLightGame.setTaskID(greenLightGame.runTaskTimer(gManager.getSquidInstance(), 0, 20).getTaskId());
+
+        greenLightGame.greenLight(true);
+
+        greenLightGame.setEndTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
+    }
+
+    public void endGame() {
+
+        //TODO TIMER END.
+
+        greenLightGame.cancel();
+        this.isRunning = false;
+
+        if (this.lightState.equals(LightState.GREEN_LIGHT)) gManager.getSquidInstance().registerListener(greenLightListener);
+
+        greenLightGame.setShootAllTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::shootAll, 20 * 10).getTaskId());
+    }
+
+    public void stopGame() {
+        Bukkit.getScheduler().cancelTask(greenLightGame.getEndTaskID());
+        Bukkit.getScheduler().cancelTask(greenLightGame.getShootAllTaskID());
+
+        //TODO TIMER END.
+
+        greenLightGame.cancel();
+
+        gManager.getSquidInstance().unregisterListener(greenLightListener);
+
+        this.greenLightGame = new GreenLightGame(this);
     }
 
     public void shoot(Player player) {
@@ -85,6 +136,10 @@ public class GreenLightManager {
 
     public boolean inCube(Location location) {
         return Locations.isInCube(firstCubeLocation, secondCubeLocation, location);
+    }
+
+    public Vector getCubeCenter2D() {
+        return cubeCenter2D.clone();
     }
 
 }

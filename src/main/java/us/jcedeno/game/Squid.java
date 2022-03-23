@@ -3,6 +3,7 @@ package us.jcedeno.game;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import me.lofro.core.paper.utils.strings.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
@@ -35,6 +36,8 @@ public class Squid extends JavaPlugin {
             .setPrettyPrinting()
             .serializeNulls()
             .create();
+
+    private final @Getter String name = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
     
     private @Getter GameManager gManager;
     private @Getter DataManager dManager;
