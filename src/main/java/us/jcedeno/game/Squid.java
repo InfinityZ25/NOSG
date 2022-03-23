@@ -9,6 +9,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import lombok.Getter;
 import me.lofro.core.paper.data.LocationSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import us.jcedeno.game.data.DataManager;
+import us.jcedeno.game.games.GameManager;
+import us.jcedeno.game.players.PlayerManager;
 
 /**
  * Entrypoint for Not Otaku SquidGame plugin.
@@ -29,6 +32,11 @@ public class Squid extends JavaPlugin {
             .setPrettyPrinting()
             .serializeNulls()
             .create();
+    
+    private GameManager gManager;
+    private DataManager dManager;
+    private PlayerManager pManager;
+    
 
     @Override
     public void onEnable() {

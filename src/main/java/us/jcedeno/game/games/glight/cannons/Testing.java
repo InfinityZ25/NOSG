@@ -1,4 +1,4 @@
-package us.jcedeno.game.cannons;
+package us.jcedeno.game.games.glight.cannons;
 
 import java.util.ArrayList;
 
