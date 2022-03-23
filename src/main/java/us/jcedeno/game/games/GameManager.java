@@ -1,6 +1,9 @@
 package us.jcedeno.game.games;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import us.jcedeno.game.Squid;
 
 /**
@@ -11,6 +14,10 @@ import us.jcedeno.game.Squid;
  */
 public class GameManager {
 
-    private @Getter Squid squidInstance;
+    private final @Getter Squid squidInstance;
+
+    public GameManager(Squid squidInstance) {
+        this.squidInstance = squidInstance;
+    }
 
 }

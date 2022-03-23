@@ -24,7 +24,6 @@ public class SquidParticipant {
         this.name = name;
         this.role = role;
         this.dead = dead;
-
     }
 
     public SquidParticipant(@Nonnull String name, @Nonnull Role role, boolean dead, @Nonnull Player player) {
@@ -32,7 +31,6 @@ public class SquidParticipant {
         this.role = role;
         this.dead = dead;
         this.player = player;
-
     }
 
 }

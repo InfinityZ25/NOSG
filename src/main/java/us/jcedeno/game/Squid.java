@@ -3,7 +3,10 @@ package us.jcedeno.game;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
@@ -33,15 +36,17 @@ public class Squid extends JavaPlugin {
             .serializeNulls()
             .create();
     
-    private GameManager gManager;
-    private DataManager dManager;
-    private PlayerManager pManager;
-    
+    private @Getter GameManager gManager;
+    private @Getter DataManager dManager;
+    private @Getter PlayerManager pManager;
 
     @Override
     public void onEnable() {
         instance = this;
 
+        this.gManager = new GameManager(this);
+        //this.dManager = new DataManager(this);
+        this.pManager = new PlayerManager(this);
     }
 
     @Override
@@ -65,6 +70,26 @@ public class Squid extends JavaPlugin {
      */
     public static MiniMessage miniMessage() {
         return miniMessage;
+    }
+
+    public void registerListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, this);
+    }
+
+    public void registerListeners(Listener... listeners) {
+        for (Listener listener : listeners) {
+            Bukkit.getPluginManager().registerEvents(listener, this);
+        }
+    }
+
+    public void unregisterListeners(Listener... listeners) {
+        for (Listener listener : listeners) {
+            HandlerList.unregisterAll(listener);
+        }
+    }
+
+    public void unregisterListener(Listener listener) {
+        HandlerList.unregisterAll(listener);
     }
 
 }

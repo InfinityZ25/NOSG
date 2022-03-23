@@ -32,7 +32,6 @@ public class PlayerManager {
         this.instance = instance;
     }
 
-
     //TODO Cleanup code below.
 
     public SquidPlayer addPlayer(final Player player) {
@@ -81,6 +80,18 @@ public class PlayerManager {
         if (player.getRole() == role)
             throw new IllegalArgumentException("Player is already " + role.name());
 
+    }
+
+    public boolean isPlayer(Player player) {
+        return getPlayer(player.getName()) != null;
+    }
+
+    public boolean isGuard(Player player) {
+        return getGuard(player.getName()) != null;
+    }
+
+    public boolean isDead(Player player) {
+        return getPlayer(player.getName()).isDead();
     }
 
     /**

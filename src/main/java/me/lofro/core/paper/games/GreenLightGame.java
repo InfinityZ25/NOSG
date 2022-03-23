@@ -176,9 +176,7 @@ public class GreenLightGame extends BukkitRunnable {
     }
 
     public void shoot(Player player) {
-        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE)
-                || game.isDead(player))
-            return;
+        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || game.isDead(player)) return;
         game.playSoundDistance(cubeCenter, 150, "sfx.dramatic_gun_shots", 1f, 1f);
         player.setHealth(0);
     }
