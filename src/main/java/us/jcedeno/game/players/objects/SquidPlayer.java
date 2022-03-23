@@ -5,12 +5,11 @@ import javax.annotation.Nonnull;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
-import lombok.Setter;
 import us.jcedeno.game.players.enums.Role;
 
 public class SquidPlayer extends SquidParticipant {
 
-    private @Setter @Getter int id;
+    private @Getter int id;
 
     public SquidPlayer(@Nonnull String name, int id) {
         super(name, Role.PLAYER);
