@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class PlayerManager extends Restorable {
     private volatile Stack<Integer> stack = new Stack<>();
     private volatile AtomicInteger currentId;
 
-    protected Squid instance;
+    protected transient Squid instance;
 
     public PlayerManager(final Squid instance) {
         this.instance = instance;
@@ -67,19 +66,13 @@ public class PlayerManager extends Restorable {
             e.printStackTrace();
         }
 
-        System.out.println(pManager.getP());
-
-    }
-
-    public String getP() {
-        return gson.toJson(participants.values());
     }
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
         var jsonObject = jsonConfig.getJsonObject();
         var jsonArray = jsonObject.getAsJsonArray("participants");
-        //Populate map
+        // Populate map
         var participantList = gson.fromJson(jsonArray, SquidParticipant.class);
 
     }
@@ -90,7 +83,7 @@ public class PlayerManager extends Restorable {
 
         json.addProperty("currentId", currentId);
         json.add("participants", gson.toJsonTree(participants.values()));
-        
+
         jsonConfig.setJsonObject(json);
 
         try {

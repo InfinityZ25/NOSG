@@ -33,4 +33,6 @@ public class SquidParticipant {
         return Bukkit.getPlayer(name);
     }
 
+    
+
 }
