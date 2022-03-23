@@ -2,8 +2,6 @@ package us.jcedeno.game.players.objects;
 
 import javax.annotation.Nonnull;
 
-import org.bukkit.entity.Player;
-
 import lombok.Getter;
 import us.jcedeno.game.players.enums.Role;
 
@@ -18,11 +16,6 @@ public class SquidPlayer extends SquidParticipant {
 
     public SquidPlayer(@Nonnull String name, int id, boolean dead) {
         super(name, Role.PLAYER, dead);
-        this.id = id;
-    }
-
-    public SquidPlayer(@Nonnull String name, int id, boolean dead, @Nonnull Player player) {
-        super(name, Role.PLAYER, dead, player);
         this.id = id;
     }
 

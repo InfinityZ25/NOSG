@@ -1,5 +1,7 @@
 package us.jcedeno.game.data;
 
+import us.jcedeno.game.players.PlayerManager;
+
 /**
  * A class to manage, backup, & restore, the state of the application.
  * 
@@ -7,6 +9,8 @@ package us.jcedeno.game.data;
  */
 public class DataManager {
 
-    
+    public void restorePlayerManager(PlayerManager pManager) {
+        // TODO handle json loading, etc.
+    }
 
 }
