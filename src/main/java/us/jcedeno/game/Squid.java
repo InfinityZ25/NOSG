@@ -15,6 +15,10 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.game.data.DataManager;
 import us.jcedeno.game.games.GameManager;
 import us.jcedeno.game.players.PlayerManager;
+import us.jcedeno.game.players.objects.SquidGuard;
+import us.jcedeno.game.players.objects.SquidParticipant;
+import us.jcedeno.game.players.objects.SquidPlayer;
+import us.jcedeno.game.players.types.RuntimeTypeAdapterFactory;
 
 /**
  * Entrypoint for Not Otaku SquidGame plugin.
@@ -28,14 +32,18 @@ import us.jcedeno.game.players.PlayerManager;
 public class Squid extends JavaPlugin {
     private @Getter static Squid instance;
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
-    /**  GSON instance with custom serializers & config */
+    /** GSON instance with custom serializers & config */
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Location.class, new LocationSerializer())
             .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer())
+            .registerTypeAdapterFactory(RuntimeTypeAdapterFactory
+                    .of(SquidParticipant.class, "type")
+                    .registerSubtype(SquidPlayer.class)
+                    .registerSubtype(SquidGuard.class))
             .setPrettyPrinting()
             .serializeNulls()
             .create();
-    
+
     private @Getter GameManager gManager;
     private @Getter DataManager dManager;
     private @Getter PlayerManager pManager;
@@ -45,7 +53,7 @@ public class Squid extends JavaPlugin {
         instance = this;
 
         this.gManager = new GameManager(this);
-        //this.dManager = new DataManager(this);
+        // this.dManager = new DataManager(this);
         this.pManager = new PlayerManager(this);
     }
 

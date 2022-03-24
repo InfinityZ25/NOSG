@@ -1,8 +1,11 @@
 package us.jcedeno.game.players.types;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import lombok.Getter;
 import us.jcedeno.game.players.objects.SquidGuard;
 import us.jcedeno.game.players.objects.SquidParticipant;
 import us.jcedeno.game.players.objects.SquidPlayer;
@@ -14,8 +17,13 @@ import us.jcedeno.game.players.objects.SquidPlayer;
  */
 public class PData {
 
-    private IdProvider idProvider;
+    private @Getter IdProvider idProvider;
     private Map<String, SquidParticipant> participants = new ConcurrentHashMap<>();
+
+    public PData() {
+        this.idProvider = new IdProvider();
+
+    }
 
     public PData(IdProvider idProvider, Map<String, SquidParticipant> participants) {
         this.idProvider = idProvider;
@@ -176,6 +184,16 @@ public class PData {
             addPlayer(removeGuard(squidGuard).getName());
         }
 
+    }
+
+    public List<SquidPlayer> getPlayers() {
+        return participants.values().stream().filter(p -> p instanceof SquidPlayer).map(p -> (SquidPlayer) p)
+                .collect(Collectors.toList());
+    }
+
+    public List<SquidGuard> getGuards() {
+        return participants.values().stream().filter(p -> p instanceof SquidGuard).map(p -> (SquidGuard) p)
+                .collect(Collectors.toList());
     }
 
 }

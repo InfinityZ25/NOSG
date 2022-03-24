@@ -1,6 +1,7 @@
 package us.jcedeno.game.data;
 
-import us.jcedeno.game.players.PlayerManager;
+import us.jcedeno.game.Squid;
+import us.jcedeno.game.data.utils.JsonConfig;
 
 /**
  * A class to manage, backup, & restore, the state of the application.
@@ -8,9 +9,20 @@ import us.jcedeno.game.players.PlayerManager;
  * @author jcedeno
  */
 public class DataManager {
+    private JsonConfig pDataConfig;
+    private JsonConfig gDataConfig;
 
-    public void restorePlayerManager(PlayerManager pManager) {
-        // TODO handle json loading, etc.
+    public DataManager(final Squid instance) throws Exception {
+        this.pDataConfig = new JsonConfig("pdata.json", instance.getDataFolder().getAbsolutePath());
+        this.gDataConfig = new JsonConfig("gdata.json", instance.getDataFolder().getAbsolutePath());
+    }
+
+    public JsonConfig pDataConfig() {
+        return pDataConfig;
+    }
+
+    public JsonConfig gDataConfig() {
+        return gDataConfig;
     }
 
 }
