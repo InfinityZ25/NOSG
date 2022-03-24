@@ -21,4 +21,5 @@ public class GData {
     public GLightData gLightData() {
         return greenLightData;
     }
+
 }
