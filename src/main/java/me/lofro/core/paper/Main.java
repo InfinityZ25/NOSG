@@ -2,8 +2,6 @@ package me.lofro.core.paper;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,7 +26,6 @@ import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
 import me.lofro.core.paper.data.LocationSerializer;
 import me.lofro.core.paper.listeners.GlobalListener;
-import me.lofro.core.paper.objects.SquidParticipant;
 import me.lofro.core.paper.utils.JsonConfig;
 import me.lofro.core.paper.utils.NegativeSpaces;
 import me.lofro.core.paper.utils.TCT.BukkitTCT;
@@ -165,92 +162,12 @@ public class Main extends JavaPlugin {
     }
 
     public void loadData() {
-        loadParticipantData();
         loadGameData();
 
         game.loadParticipants();
         game.loadDay();
 
         game.getGreenLightGame().loadGameCube();
-    }
-
-    public void loadParticipantData() {
-        try {
-            JsonObject dataJsonObject = this.participantData.getJsonObject();
-
-            if (dataJsonObject == null)
-                return;
-
-            JsonArray playerJsonArray = dataJsonObject.getAsJsonArray("PLAYERS");
-            JsonArray guardJsonArray = dataJsonObject.getAsJsonArray("GUARDS");
-
-            if (playerJsonArray != null) {
-                for (int i = 0; i < playerJsonArray.size(); i++) {
-                    JsonObject playerJsonArrayObject = (JsonObject) playerJsonArray.get(i);
-
-                    JsonElement element = playerJsonArrayObject.get("NAME");
-                    String name = element.getAsString();
-
-                    game.getParticipantRoles().put(name, Game.Role.PLAYER);
-
-                    int id;
-                    boolean dead;
-
-                    for (Map.Entry<String, JsonElement> entry : playerJsonArrayObject.entrySet()) {
-                        String entryKey = entry.getKey();
-                        JsonElement entryValue = entry.getValue();
-
-                        switch (entryKey) {
-                            case "ID" -> {
-                                id = entryValue.getAsInt();
-                                game.getPlayerIds().put(name, id);
-                            }
-                            case "DEAD" -> {
-                                dead = entryValue.getAsBoolean();
-                                game.getParticipantDeadStates().put(name, dead);
-
-                                SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null)
-                                        ? new SquidParticipant(name, Game.Role.PLAYER, dead,
-                                                Objects.requireNonNull(Bukkit.getPlayer(name)), instance)
-                                        : new SquidParticipant(name, Game.Role.PLAYER, dead, instance);
-                                game.getParticipants().put(name, squidParticipant);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (guardJsonArray != null) {
-                for (int i = 0; i < guardJsonArray.size(); i++) {
-                    JsonObject guardJsonArrayObject = (JsonObject) guardJsonArray.get(i);
-
-                    JsonElement element = guardJsonArrayObject.get("NAME");
-                    String name = element.getAsString();
-
-                    game.getParticipantRoles().put(name, Game.Role.GUARD);
-
-                    for (Map.Entry<String, JsonElement> entry : guardJsonArrayObject.entrySet()) {
-                        String entryKey = entry.getKey();
-                        JsonElement entryValue = entry.getValue();
-
-                        boolean dead;
-
-                        if ("DEAD".equals(entryKey)) {
-                            dead = entryValue.getAsBoolean();
-                            game.getParticipantDeadStates().put(name, dead);
-
-                            SquidParticipant squidParticipant = (Bukkit.getPlayer(name) != null)
-                                    ? new SquidParticipant(name, Game.Role.GUARD, dead,
-                                            Objects.requireNonNull(Bukkit.getPlayer(name)), instance)
-                                    : new SquidParticipant(name, Game.Role.GUARD, dead, instance);
-                            game.getParticipants().put(name, squidParticipant);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void loadGameData() {

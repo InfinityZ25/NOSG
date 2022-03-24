@@ -11,7 +11,7 @@ public class SquidPlayerAddedEvent extends BaseEvent {
     private final long time;
 
     public SquidPlayerAddedEvent(final SquidPlayer squidPlayer) {
-        super(!Bukkit.isPrimaryThread());
+        super(Bukkit.getServer() != null ? !Bukkit.isPrimaryThread() : false);
         this.squidPlayer = squidPlayer;
         this.time = System.nanoTime();
     }

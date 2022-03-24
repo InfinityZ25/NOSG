@@ -1,9 +1,6 @@
 package us.jcedeno.game.games;
 
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import us.jcedeno.game.Squid;
 
 /**
