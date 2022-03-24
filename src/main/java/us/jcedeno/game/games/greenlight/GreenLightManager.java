@@ -1,35 +1,33 @@
 package us.jcedeno.game.games.greenlight;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import lombok.Getter;
+import lombok.Setter;
 import us.jcedeno.game.games.GameManager;
 import us.jcedeno.game.games.greenlight.enums.LightState;
 import us.jcedeno.game.games.greenlight.listeners.GreenLightListener;
 import us.jcedeno.game.games.greenlight.listeners.PreLightGameListener;
+import us.jcedeno.game.games.greenlight.types.GLightData;
 import us.jcedeno.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
 import us.jcedeno.game.global.utils.Locations;
 import us.jcedeno.game.global.utils.Sounds;
 import us.jcedeno.game.players.PlayerManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GreenLightManager {
 
     private final @Getter GameManager gManager;
     private @Getter GreenLightGame greenLightGame;
 
-    private @Getter @Setter Location cubeLower;
-    private @Getter @Setter Location cubeUpper;
     private @Getter Location cubeCenter;
-
-    private @Getter List<Location> cannonLocations;
 
     private Vector cubeCenter2D;
 
@@ -55,10 +53,7 @@ public class GreenLightManager {
         this.greenLightListener = new GreenLightListener(this);
 
         this.world = world;
-        this.cubeLower = gManager.gData().gLightData().getCubeLower();
-        this.cubeUpper = gManager.gData().gLightData().getCubeUpper();
-        this.cannonLocations = gManager.gData().gLightData().getCannonLocations();
-        this.cubeCenter = Locations.getCubeCenter(world, cubeLower, cubeUpper);
+        this.cubeCenter = Locations.getCubeCenter(world, cubeLower(), cubeUpper());
         setCubeCenter2D(cubeCenter);
 
         this.greenLightGame = new GreenLightGame(this);
@@ -69,11 +64,13 @@ public class GreenLightManager {
 
         gManager.getSquidInstance().registerListener(preGameListener);
 
-        //TODO EXTRA FUNCTIONS.
+        // TODO EXTRA FUNCTIONS.
     }
 
     public void runGame(int seconds) {
-        if (this.isRunning) throw new IllegalStateException("The game " + greenLightGame.getClass().getSimpleName() + " is already running.");
+        if (this.isRunning)
+            throw new IllegalStateException(
+                    "The game " + greenLightGame.getClass().getSimpleName() + " is already running.");
 
         this.isRunning = true;
 
@@ -83,19 +80,22 @@ public class GreenLightManager {
 
         greenLightGame.greenLight(true);
 
-        greenLightGame.setEndTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
+        greenLightGame.setEndTaskID(Bukkit.getScheduler()
+                .runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
     }
 
     public void endGame() {
 
-       gManager.getTimer().end();
+        gManager.getTimer().end();
 
         greenLightGame.cancel();
         this.isRunning = false;
 
-        if (this.lightState.equals(LightState.GREEN_LIGHT)) gManager.getSquidInstance().registerListener(greenLightListener);
+        if (this.lightState.equals(LightState.GREEN_LIGHT))
+            gManager.getSquidInstance().registerListener(greenLightListener);
 
-        greenLightGame.setShootAllTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::shootAll, 20 * 10).getTaskId());
+        greenLightGame.setShootAllTaskID(
+                Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::shootAll, 20 * 10).getTaskId());
 
         this.greenLightGame = new GreenLightGame(this);
     }
@@ -115,7 +115,9 @@ public class GreenLightManager {
     }
 
     public void shoot(Player player) {
-        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE) || playerManager().isDead(player)) return;
+        if (player.getGameMode().equals(GameMode.SPECTATOR) || player.getGameMode().equals(GameMode.CREATIVE)
+                || playerManager().isDead(player))
+            return;
         Sounds.playSoundDistance(cubeCenter, 150, "sfx.dramatic_gun_shots", 1f, 1f);
         player.setHealth(0);
     }
@@ -124,7 +126,7 @@ public class GreenLightManager {
         ArrayList<Player> playerList = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (playerManager().isPlayer(p) && !playerManager().isDead(p)
-                    && Locations.isInCube(cubeLower.clone().add(21, 0, 0), cubeUpper, p.getLocation())) {
+                    && Locations.isInCube(cubeLower().clone().add(21, 0, 0), cubeUpper(), p.getLocation())) {
                 playerList.add(p);
             }
         });
@@ -136,7 +138,7 @@ public class GreenLightManager {
     }
 
     public boolean inCube(Location location) {
-        return Locations.isInCube(cubeLower, cubeUpper, location);
+        return Locations.isInCube(cubeLower(), cubeUpper(), location);
     }
 
     public void setCubeCenter2D(Location location) {
@@ -146,6 +148,22 @@ public class GreenLightManager {
 
     public Vector getCubeCenter2D() {
         return cubeCenter2D.clone();
+    }
+
+    public Location cubeUpper() {
+        return gLightData().getCubeUpper();
+    }
+
+    public Location cubeLower() {
+        return gLightData().getCubeLower();
+    }
+
+    public List<Location> cannonLocations() {
+        return gLightData().getCannonLocations();
+    }
+
+    private GLightData gLightData() {
+        return this.gManager.gData().gLightData();
     }
 
 }

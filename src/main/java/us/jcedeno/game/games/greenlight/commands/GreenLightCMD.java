@@ -1,14 +1,14 @@
 package us.jcedeno.game.games.greenlight.commands;
 
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Subcommand;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import us.jcedeno.game.games.greenlight.GreenLightManager;
 import us.jcedeno.game.global.utils.Strings;
-
 
 @CommandAlias("greenLight")
 public class GreenLightCMD extends BaseCommand {
@@ -21,7 +21,8 @@ public class GreenLightCMD extends BaseCommand {
 
     @Subcommand("run")
     @CommandCompletion("@runGLightGame")
-    public void runGame(CommandSender sender, int seconds, int greenLowestTimeBound, int greenHighestTimeBound, int redLowestTimeBound, int redHighestTimeBound) {
+    public void runGame(CommandSender sender, int seconds, int greenLowestTimeBound, int greenHighestTimeBound,
+            int redLowestTimeBound, int redHighestTimeBound) {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(Strings.prefix + "&cEl juego ya está siendo ejecutado."));
         } else {
@@ -59,16 +60,15 @@ public class GreenLightCMD extends BaseCommand {
     @Subcommand("setCube")
     public void setCube(CommandSender sender, Location cubeLower, Location cubeUpper) {
         if (gLightManager.isRunning()) {
-            sender.sendMessage(Strings.format(Strings.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
+            sender.sendMessage(Strings
+                    .format(Strings.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
         } else {
             var gData = gLightManager.getGManager().gData().gLightData();
 
-            gLightManager.setCubeLower(cubeLower);
-            gLightManager.setCubeUpper(cubeUpper);
-
             gData.setCubeLower(cubeLower);
             gData.setCubeUpper(cubeUpper);
-            sender.sendMessage(Strings.format(Strings.prefix + "&bEl cubo de juego ha sido actualizado correctamente."));
+            sender.sendMessage(
+                    Strings.format(Strings.prefix + "&bEl cubo de juego ha sido actualizado correctamente."));
         }
     }
 }
