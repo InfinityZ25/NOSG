@@ -21,9 +21,13 @@ public class JTimer implements Runnable {
         if (time > 0) {
             return time--;
         }
+        onComplete();
+        return 0;
+    }
+
+    protected void onComplete() {
         // Complete the future
         future.complete(this);
-        return 0;
     }
 
     @Override
