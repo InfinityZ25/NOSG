@@ -9,6 +9,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
 import me.lofro.core.paper.data.LocationSerializer;
 import me.lofro.core.paper.utils.strings.Strings;
@@ -16,10 +17,10 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.game.data.DataManager;
 import us.jcedeno.game.games.GameManager;
 import us.jcedeno.game.players.PlayerManager;
+import us.jcedeno.game.players.adapter.RuntimeTypeAdapterFactory;
 import us.jcedeno.game.players.objects.SquidGuard;
 import us.jcedeno.game.players.objects.SquidParticipant;
 import us.jcedeno.game.players.objects.SquidPlayer;
-import us.jcedeno.game.players.types.RuntimeTypeAdapterFactory;
 
 /**
  * Entrypoint for Not Otaku SquidGame plugin.
@@ -30,8 +31,8 @@ import us.jcedeno.game.players.types.RuntimeTypeAdapterFactory;
  * @author <a href="https://jcedeno.us/github">jcedeno</a> - Consultant &
  *         Collaborator.
  */
-public class Squid extends JavaPlugin {
-    private @Getter static Squid instance;
+public class SquidGame extends JavaPlugin {
+    private @Getter static SquidGame instance;
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
     /** GSON instance with custom serializers & config */
     private static final Gson gson = new GsonBuilder()
@@ -47,6 +48,8 @@ public class Squid extends JavaPlugin {
 
     private @Getter final String prefix = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
 
+    private @Getter PaperCommandManager commandManager;
+
     private @Getter GameManager gManager;
     private @Getter DataManager dManager;
     private @Getter PlayerManager pManager;
@@ -55,13 +58,21 @@ public class Squid extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        this.commandManager = new PaperCommandManager(this);
+
         this.gManager = new GameManager(this);
-        // this.dManager = new DataManager(this);
+        try {
+            this.dManager = new DataManager(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         this.pManager = new PlayerManager(this);
     }
 
     @Override
     public void onDisable() {
+        // Backup data onDisable
+        this.dManager.save();
 
     }
 
@@ -82,6 +93,8 @@ public class Squid extends JavaPlugin {
     public static MiniMessage miniMessage() {
         return miniMessage;
     }
+
+    // TODO Maybe move this to a new class?
 
     public void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);

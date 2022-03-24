@@ -1,4 +1,4 @@
-package us.jcedeno.game.players.types;
+package us.jcedeno.game.data.types;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,7 @@ import lombok.Getter;
 import us.jcedeno.game.players.objects.SquidGuard;
 import us.jcedeno.game.players.objects.SquidParticipant;
 import us.jcedeno.game.players.objects.SquidPlayer;
+import us.jcedeno.game.players.types.IdProvider;
 
 /**
  * A class that holds all the state of the players in the game.

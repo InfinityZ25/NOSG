@@ -2,10 +2,10 @@ package us.jcedeno.game.players;
 
 import org.bukkit.entity.Player;
 
-import us.jcedeno.game.Squid;
+import us.jcedeno.game.SquidGame;
+import us.jcedeno.game.data.types.PData;
 import us.jcedeno.game.data.utils.JsonConfig;
 import us.jcedeno.game.global.interfaces.Restorable;
-import us.jcedeno.game.players.types.PData;
 
 /**
  * A class to manage the players in the game, their roles & status, and interact
@@ -15,10 +15,10 @@ import us.jcedeno.game.players.types.PData;
  * 
  */
 public class PlayerManager extends Restorable {
-    protected transient Squid instance;
+    protected transient SquidGame instance;
     private PData playerData;
 
-    public PlayerManager(final Squid instance) {
+    public PlayerManager(final SquidGame instance) {
         this.instance = instance;
     }
 
@@ -28,12 +28,12 @@ public class PlayerManager extends Restorable {
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
-        this.playerData = Squid.gson().fromJson(jsonConfig.getJsonObject(), PData.class);
+        this.playerData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), PData.class);
     }
 
     @Override
-    protected void save(JsonConfig jsonConfig) {
-        jsonConfig.setJsonObject(Squid.gson().toJsonTree(playerData).getAsJsonObject());
+    public void save(JsonConfig jsonConfig) {
+        jsonConfig.setJsonObject(SquidGame.gson().toJsonTree(playerData).getAsJsonObject());
         try {
             jsonConfig.save();
         } catch (Exception e) {

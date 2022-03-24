@@ -22,7 +22,6 @@ import java.util.ArrayList;
 public class GreenLightManager {
 
     private @Getter final GameManager gManager;
-
     private @Getter GreenLightGame greenLightGame;
 
     private @Getter Location firstCubeLocation;

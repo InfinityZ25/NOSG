@@ -5,6 +5,6 @@ import us.jcedeno.game.data.utils.JsonConfig;
 public abstract class Restorable {
 
     protected abstract void restore(JsonConfig jsonConfig);
-    protected abstract void save(JsonConfig jsonConfig);
+    public abstract void save(JsonConfig jsonConfig);
 
 }

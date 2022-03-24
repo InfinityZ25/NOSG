@@ -1,20 +1,21 @@
 package us.jcedeno.game.games.greenlight;
 
+import java.time.Duration;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 import us.jcedeno.game.games.GameManager;
 import us.jcedeno.game.games.greenlight.enums.LightState;
 import us.jcedeno.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
 import us.jcedeno.game.global.utils.Strings;
-
-import java.time.Duration;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,7 +35,6 @@ public class GreenLightGame extends BukkitRunnable {
     private @Getter @Setter int taskID;
     private @Getter @Setter int endTaskID;
     private @Getter @Setter int shootAllTaskID;
-
 
     public GreenLightGame(GreenLightManager gLightManager) {
         this.gLightManager = gLightManager;
@@ -61,7 +61,6 @@ public class GreenLightGame extends BukkitRunnable {
     }
 
     /**
-     *
      * Function that updates the light state of the game. Makes the logic run.
      *
      * @param bool defines whether the light is green or red.
@@ -84,6 +83,12 @@ public class GreenLightGame extends BukkitRunnable {
         }
     }
 
+    /**
+     * Helper function that sends a title to all players.
+     * 
+     * @param title    title to be sent.
+     * @param subTitle subTitle to be sent.
+     */
     private void greenLightTitle(String title, String subTitle) {
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.showTitle(Title.title(Component.text(Strings.format(title)),
