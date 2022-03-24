@@ -60,13 +60,13 @@ public class SquidGame extends JavaPlugin {
 
         this.commandManager = new PaperCommandManager(this);
 
-        this.gManager = new GameManager(this);
         try {
             this.dManager = new DataManager(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
         this.pManager = new PlayerManager(this);
+        this.gManager = new GameManager(this);
     }
 
     @Override
