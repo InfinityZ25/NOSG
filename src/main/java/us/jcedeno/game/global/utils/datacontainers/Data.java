@@ -1,17 +1,17 @@
 package us.jcedeno.game.global.utils.datacontainers;
 
-import me.lofro.core.paper.Main;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 
 public class Data {
-    public static NamespacedKey key(String key) {
-        return new NamespacedKey(Main.getPlugin(Main.class), key);
+    public static NamespacedKey key(String key, JavaPlugin javaPlugin) {
+        return new NamespacedKey(javaPlugin, key);
     }
 
     public static PersistentDataContainer getData(@Nonnull PersistentDataHolder dataHolder) throws PlayerIsNotOnlineException {
@@ -19,15 +19,15 @@ public class Data {
         return dataHolder.getPersistentDataContainer();
     }
 
-    public static <T> void set(@Nonnull PersistentDataContainer data, String key, PersistentDataType<T, T> type, T value) {
-        data.set(key(key), type, value);
+    public static <T> void set(@Nonnull PersistentDataContainer data, String key, JavaPlugin javaPlugin, PersistentDataType<T, T> type, T value) {
+        data.set(key(key, javaPlugin), type, value);
     }
 
-    public static <T> T get(@Nonnull PersistentDataContainer data, String key, PersistentDataType<T, T> type) {
-        return data.get(key(key), type);
+    public static <T> T get(@Nonnull PersistentDataContainer data, String key, JavaPlugin javaPlugin, PersistentDataType<T, T> type) {
+        return data.get(key(key, javaPlugin), type);
     }
 
-    public static <T> boolean has(@Nonnull PersistentDataContainer data, String key, PersistentDataType<T, T> type) {
-        return data.has(key(key), type);
+    public static <T> boolean has(@Nonnull PersistentDataContainer data, String key, JavaPlugin javaPlugin, PersistentDataType<T, T> type) {
+        return data.has(key(key, javaPlugin), type);
     }
 }

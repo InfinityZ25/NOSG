@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
@@ -40,7 +42,7 @@ public class GlobalListener implements Listener {
 
         pManager.guardMessage(Component.text(Strings.format("&7El jugador &6" + name + " &7ha entrado al servidor.")));
 
-        if (pManager.pData().getParticipant(name) != null) {
+        if (pManager.pData().getParticipant(name) == null) {
             if (player.isOp()) {
                 pManager.pData().addGuard(name);
             } else {
@@ -84,8 +86,8 @@ public class GlobalListener implements Listener {
 
         try {
             PersistentDataContainer dataContainer = Data.getData(player);
-            Data.set(dataContainer, "DEATH_LOCATION", PersistentDataType.INTEGER_ARRAY, new int[]{deathLocation.getBlockX(), deathLocation.getBlockY(), deathLocation.getBlockZ()});
-            Data.set(dataContainer, "DEATH_LOCATION_ROTATION", PersistentDataType.FLOAT, player.getLocation().getYaw());
+            Data.set(dataContainer, "DEATH_LOCATION", gManager.getSquidInstance(), PersistentDataType.INTEGER_ARRAY, new int[]{deathLocation.getBlockX(), deathLocation.getBlockY(), deathLocation.getBlockZ()});
+            Data.set(dataContainer, "DEATH_LOCATION_ROTATION", gManager.getSquidInstance(), PersistentDataType.FLOAT, player.getLocation().getYaw());
         } catch (PlayerIsNotOnlineException ex) {
             ex.printStackTrace();
         }
@@ -107,6 +109,23 @@ public class GlobalListener implements Listener {
         Bukkit.broadcast(Component.text(me.lofro.core.paper.utils.strings.Strings.format("&bEl jugador &3#" + playerID + " " + name + " &bha sido eliminado.")));
 
         //TODO CABEZA.
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e) {
+        var player = e.getPlayer();
+
+        try {
+            PersistentDataContainer persistentDataContainer = Data.getData(player);
+            int[] locationBlocks = Data.get(persistentDataContainer,"DEATH_LOCATION",gManager.getSquidInstance(), PersistentDataType.INTEGER_ARRAY);
+            float yaw = Data.get(persistentDataContainer, "DEATH_LOCATION_ROTATION", gManager.getSquidInstance(), PersistentDataType.FLOAT);
+            Location respawnLocation = new Location(player.getWorld(), locationBlocks[0], locationBlocks[1], locationBlocks[2]);
+            respawnLocation.setYaw(yaw);
+
+            e.setRespawnLocation(respawnLocation);
+        } catch (PlayerIsNotOnlineException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @EventHandler

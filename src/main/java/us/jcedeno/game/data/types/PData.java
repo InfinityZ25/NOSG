@@ -176,7 +176,7 @@ public class PData {
     }
 
     // Change roles function
-    public void changeRoles(final SquidParticipant participant) {
+    public void toggleRoles(final SquidParticipant participant) {
         if (participant instanceof SquidPlayer squidPlayer) {
             // Remove the player, add him back to set as guard.
             addGuard(removePlayer(squidPlayer).getName());

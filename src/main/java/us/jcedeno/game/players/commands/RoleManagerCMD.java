@@ -33,7 +33,7 @@ public class RoleManagerCMD extends BaseCommand {
 
         var squidParticipant = pManager.pData().getParticipant(name);
 
-        pManager.pData().changeRoles(squidParticipant);
+        pManager.pData().toggleRoles(squidParticipant);
 
         sender.sendMessage(Strings.format(Strings.prefix + "&bEl rol del jugador &3" + player.getName() + " &bha sido asignado a &3" + role.name() + "&b."));
     }
