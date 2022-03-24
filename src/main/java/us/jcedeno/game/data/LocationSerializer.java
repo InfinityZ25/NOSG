@@ -1,4 +1,4 @@
-package me.lofro.core.paper.data;
+package us.jcedeno.game.data;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

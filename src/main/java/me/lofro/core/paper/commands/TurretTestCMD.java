@@ -15,7 +15,7 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
 import me.lofro.core.paper.Main;
 import me.lofro.core.paper.data.GData;
-import me.lofro.core.paper.data.LocationSerializer;
+import us.jcedeno.game.data.LocationSerializer;
 import me.lofro.core.paper.data.PData;
 import me.lofro.core.paper.utils.turrets.Turrets;
 import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;

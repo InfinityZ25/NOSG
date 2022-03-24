@@ -1,11 +1,14 @@
 package us.jcedeno.game.players;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import us.jcedeno.game.SquidGame;
 import us.jcedeno.game.data.types.PData;
 import us.jcedeno.game.data.utils.JsonConfig;
 import us.jcedeno.game.global.interfaces.Restorable;
+import us.jcedeno.game.players.commands.RoleManagerCMD;
 
 /**
  * A class to manage the players in the game, their roles & status, and interact
@@ -22,6 +25,7 @@ public class PlayerManager extends Restorable {
         this.instance = instance;
         // restore state
         restore(instance.getDManager().pDataConfig());
+        instance.registerCommands(instance.getCommandManager(), new RoleManagerCMD(this));
     }
 
     public PlayerManager() {
@@ -60,6 +64,20 @@ public class PlayerManager extends Restorable {
 
     public boolean isDead(Player player) {
         return playerData.getPlayer(player.getName()).isDead();
+    }
+
+    public void guardMessage(Component text) {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (isGuard(player))
+                player.sendMessage(text);
+        });
+    }
+
+    public void adminMessage(Component text) {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (player.isOp())
+                player.sendMessage(text);
+        });
     }
 
 }

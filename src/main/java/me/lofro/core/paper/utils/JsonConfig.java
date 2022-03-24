@@ -13,7 +13,7 @@ import org.bukkit.Location;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.lofro.core.paper.data.LocationSerializer;
+import us.jcedeno.game.data.LocationSerializer;
 
 public class JsonConfig {
     private Gson gson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationSerializer())

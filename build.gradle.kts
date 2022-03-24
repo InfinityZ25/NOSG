@@ -79,6 +79,6 @@ bukkit {
     name = "SquidOtakuGame"
     version = "1.0"
     apiVersion = "1.18"
-    main = "me.lofro.core.paper.Main"
+    main = "us.jcedeno.game.SquidGame"
     author = "Lofro"
 }

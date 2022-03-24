@@ -9,8 +9,8 @@ import us.jcedeno.game.data.utils.JsonConfig;
  * @author jcedeno
  */
 public class DataManager {
-    private JsonConfig pDataConfig;
-    private JsonConfig gDataConfig;
+    private final JsonConfig pDataConfig;
+    private final JsonConfig gDataConfig;
 
     public DataManager(final SquidGame instance) throws Exception {
         this.pDataConfig = new JsonConfig("pdata.json", instance.getDataFolder().getAbsolutePath());

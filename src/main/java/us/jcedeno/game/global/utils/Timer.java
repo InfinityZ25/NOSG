@@ -1,21 +1,24 @@
-package us.jcedeno.game.players.objects;
+package us.jcedeno.game.global.utils;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.lofro.core.paper.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import us.jcedeno.game.SquidGame;
 
-public class Timer {
+public class Timer extends BukkitRunnable {
 
-    private final Main instance;
+    SquidGame squidInstance;
 
     private int startTime;
     private int seconds;
+
+    private int gameTime = 0;
 
     private final @Getter BossBar bossBar;
 
@@ -23,11 +26,11 @@ public class Timer {
 
     private String time = "";
 
-    public Timer(Main instance, int currentTime) {
-        this.instance = instance;
+    public Timer(SquidGame squidInstance, int gameTime) {
+        this.squidInstance = squidInstance;
         this.seconds = 0;
-        this.startTime = currentTime;
-        this.bossBar = Bukkit.createBossBar(new NamespacedKey(instance, "TIMER"), "", BarColor.WHITE, BarStyle.SOLID);
+        this.gameTime = gameTime;
+        this.bossBar = Bukkit.createBossBar(new NamespacedKey(squidInstance, "TIMER"), "", BarColor.WHITE, BarStyle.SOLID);
         this.bossBar.setVisible(false);
     }
 
@@ -84,7 +87,7 @@ public class Timer {
     public void updateTime(int seconds) {
         this.time = timeConvert(seconds);
         this.seconds = seconds;
-        this.startTime = (int) instance.getGame().getGameTime();
+        this.startTime = gameTime;
     }
 
     public void start(int seconds) {
@@ -101,4 +104,12 @@ public class Timer {
         removePlayers();
     }
 
+    @Override
+    public void run() {
+        this.startTime = (int) (Math.floor((System.currentTimeMillis() - startTime) / 1000.0));
+
+        if (isActive) {
+            refreshTime(gameTime);
+        }
+    }
 }

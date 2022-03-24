@@ -3,11 +3,12 @@ package us.jcedeno.game.players.objects;
 import javax.annotation.Nonnull;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class SquidPlayer extends SquidParticipant {
 
     private @Getter int id;
-    private @Getter boolean dead;
+    private @Getter @Setter boolean dead;
 
     public SquidPlayer(@Nonnull String name, int id) {
         super(name);

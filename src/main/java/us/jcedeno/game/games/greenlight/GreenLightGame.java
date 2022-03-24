@@ -84,7 +84,7 @@ public class GreenLightGame extends BukkitRunnable {
     }
 
     /**
-     * Helper function that sends a title to all players.
+     * Helper function that sends a title to all players and plays the GreenLightGame bell sound effect.
      * 
      * @param title    title to be sent.
      * @param subTitle subTitle to be sent.

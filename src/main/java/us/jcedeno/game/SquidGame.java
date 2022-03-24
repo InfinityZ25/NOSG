@@ -1,5 +1,6 @@
 package us.jcedeno.game;
 
+import co.aikar.commands.BaseCommand;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -11,11 +12,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
-import me.lofro.core.paper.data.LocationSerializer;
-import me.lofro.core.paper.utils.strings.Strings;
+import us.jcedeno.game.data.LocationSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.game.data.DataManager;
 import us.jcedeno.game.games.GameManager;
+import us.jcedeno.game.global.listeners.GlobalListener;
+import us.jcedeno.game.global.utils.Strings;
 import us.jcedeno.game.players.PlayerManager;
 import us.jcedeno.game.players.adapter.RuntimeTypeAdapterFactory;
 import us.jcedeno.game.players.objects.SquidGuard;
@@ -46,8 +48,6 @@ public class SquidGame extends JavaPlugin {
             .serializeNulls()
             .create();
 
-    private @Getter final String prefix = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
-
     private @Getter PaperCommandManager commandManager;
 
     private @Getter GameManager gManager;
@@ -67,6 +67,14 @@ public class SquidGame extends JavaPlugin {
         }
         this.pManager = new PlayerManager(this);
         this.gManager = new GameManager(this);
+
+        registerListeners(
+                new GlobalListener(pManager, gManager)
+        );
+
+        this.commandManager = new PaperCommandManager(this);
+
+        Bukkit.getLogger().info(Strings.format(Strings.prefix + "&aEl plugin ha sido iniciado correctamente."));
     }
 
     @Override
@@ -74,10 +82,13 @@ public class SquidGame extends JavaPlugin {
         // Backup data onDisable
         this.dManager.save();
 
+        this.gManager.getTimer().removePlayers();
+
+        Bukkit.getLogger().info(Strings.format(Strings.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }
 
     /**
-     * A static method to aceess the Gson object globally.
+     * A static method to access the Gson object globally.
      * 
      * @return gson with all adapter types registered.
      */
@@ -95,6 +106,12 @@ public class SquidGame extends JavaPlugin {
     }
 
     // TODO Maybe move this to a new class?
+
+    public void registerCommands(PaperCommandManager manager, BaseCommand... commandExecutors) {
+        for (BaseCommand commandExecutor : commandExecutors) {
+            manager.registerCommand(commandExecutor);
+        }
+    }
 
     public void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);

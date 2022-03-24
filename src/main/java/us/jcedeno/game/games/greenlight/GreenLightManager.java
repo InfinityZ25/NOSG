@@ -18,15 +18,18 @@ import us.jcedeno.game.global.utils.Sounds;
 import us.jcedeno.game.players.PlayerManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GreenLightManager {
 
-    private @Getter final GameManager gManager;
+    private final @Getter GameManager gManager;
     private @Getter GreenLightGame greenLightGame;
 
-    private @Getter Location firstCubeLocation;
-    private @Getter Location secondCubeLocation;
+    private @Getter @Setter Location cubeLower;
+    private @Getter @Setter Location cubeUpper;
     private @Getter Location cubeCenter;
+
+    private @Getter List<Location> cannonLocations;
 
     private Vector cubeCenter2D;
 
@@ -37,31 +40,27 @@ public class GreenLightManager {
     private final @Getter PreLightGameListener preGameListener;
     private final @Getter GreenLightListener greenLightListener;
 
-    private @Getter @Setter int greenLowestTimeBound;
-    private @Getter @Setter int greenHighestTimeBound;
+    private @Getter @Setter int greenLowestTimeBound = 3;
+    private @Getter @Setter int greenHighestTimeBound = 10;
 
-    private @Getter @Setter int redLowestTimeBound;
-    private @Getter @Setter int redHighestTimeBound;
+    private @Getter @Setter int redLowestTimeBound = 10;
+    private @Getter @Setter int redHighestTimeBound = 20;
 
     private @Getter final World world;
 
     public GreenLightManager(GameManager gManager, World world) {
         this.gManager = gManager;
-        this.preGameListener = new PreLightGameListener(this);
-        this.greenLightListener = new GreenLightListener(this);
-        this.world = world;
-        this.greenLightGame = new GreenLightGame(this);
-    }
 
-    public GreenLightManager(GameManager gManager, int greenLowestTimeBound, int greenHighestTimeBound, int redLowestTimeBound, int redHighestTimeBound, World world) {
-        this.gManager = gManager;
         this.preGameListener = new PreLightGameListener(this);
         this.greenLightListener = new GreenLightListener(this);
-        this.greenLowestTimeBound = greenLowestTimeBound;
-        this.greenHighestTimeBound = greenHighestTimeBound;
-        this.redLowestTimeBound = redLowestTimeBound;
-        this.redHighestTimeBound = redHighestTimeBound;
+
         this.world = world;
+        this.cubeLower = gManager.gData().gLightData().getCubeLower();
+        this.cubeUpper = gManager.gData().gLightData().getCubeUpper();
+        this.cannonLocations = gManager.gData().gLightData().getCannonLocations();
+        this.cubeCenter = Locations.getCubeCenter(world, cubeLower, cubeUpper);
+        setCubeCenter2D(cubeCenter);
+
         this.greenLightGame = new GreenLightGame(this);
     }
 
@@ -78,7 +77,7 @@ public class GreenLightManager {
 
         this.isRunning = true;
 
-        //TODO TIMER START;
+        gManager.getTimer().start(seconds);
 
         greenLightGame.setTaskID(greenLightGame.runTaskTimer(gManager.getSquidInstance(), 0, 20).getTaskId());
 
@@ -89,7 +88,7 @@ public class GreenLightManager {
 
     public void endGame() {
 
-        //TODO TIMER END.
+       gManager.getTimer().end();
 
         greenLightGame.cancel();
         this.isRunning = false;
@@ -97,15 +96,18 @@ public class GreenLightManager {
         if (this.lightState.equals(LightState.GREEN_LIGHT)) gManager.getSquidInstance().registerListener(greenLightListener);
 
         greenLightGame.setShootAllTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::shootAll, 20 * 10).getTaskId());
+
+        this.greenLightGame = new GreenLightGame(this);
     }
 
     public void stopGame() {
         Bukkit.getScheduler().cancelTask(greenLightGame.getEndTaskID());
         Bukkit.getScheduler().cancelTask(greenLightGame.getShootAllTaskID());
 
-        //TODO TIMER END.
+        gManager.getTimer().end();
 
         greenLightGame.cancel();
+        this.isRunning = false;
 
         gManager.getSquidInstance().unregisterListener(greenLightListener);
 
@@ -122,7 +124,7 @@ public class GreenLightManager {
         ArrayList<Player> playerList = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (playerManager().isPlayer(p) && !playerManager().isDead(p)
-                    && Locations.isInCube(firstCubeLocation.clone().add(21, 0, 0), secondCubeLocation, p.getLocation())) {
+                    && Locations.isInCube(cubeLower.clone().add(21, 0, 0), cubeUpper, p.getLocation())) {
                 playerList.add(p);
             }
         });
@@ -134,7 +136,12 @@ public class GreenLightManager {
     }
 
     public boolean inCube(Location location) {
-        return Locations.isInCube(firstCubeLocation, secondCubeLocation, location);
+        return Locations.isInCube(cubeLower, cubeUpper, location);
+    }
+
+    public void setCubeCenter2D(Location location) {
+        this.cubeCenter = location;
+        cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
     }
 
     public Vector getCubeCenter2D() {

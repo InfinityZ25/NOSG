@@ -100,5 +100,4 @@ public class Timer {
         this.isActive = false;
         removePlayers();
     }
-
 }

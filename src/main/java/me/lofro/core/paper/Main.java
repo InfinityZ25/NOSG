@@ -24,7 +24,7 @@ import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
-import me.lofro.core.paper.data.LocationSerializer;
+import us.jcedeno.game.data.LocationSerializer;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.utils.JsonConfig;
 import me.lofro.core.paper.utils.NegativeSpaces;

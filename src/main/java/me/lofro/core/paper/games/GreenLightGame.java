@@ -152,7 +152,7 @@ public class GreenLightGame extends BukkitRunnable {
             Bukkit.getOnlinePlayers().forEach(p -> {
                 p.showTitle(Title.title(Component.text(Strings.format("&a¡LUZ VERDE!")),
                         Component.text(Strings.format("&aPuedes comenzar a moverte.")),
-                        Title.Times.of(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
+                        Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
                 p.playSound(p.getLocation(), "sfx.bell", 1, 1);
             });
 
@@ -163,7 +163,7 @@ public class GreenLightGame extends BukkitRunnable {
             Bukkit.getOnlinePlayers().forEach(p -> {
                 p.showTitle(Title.title(Component.text(Strings.format("&c¡LUZ ROJA!")),
                         Component.text(Strings.format("&cNo muevas ni un pelo.")),
-                        Title.Times.of(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
+                        Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(3), Duration.ofSeconds(3))));
                 p.playSound(p.getLocation(), "sfx.bell", 1, 1);
             });
 
