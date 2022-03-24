@@ -20,6 +20,8 @@ public class PlayerManager extends Restorable {
 
     public PlayerManager(final SquidGame instance) {
         this.instance = instance;
+        // restore state
+        restore(instance.getDManager().pDataConfig());
     }
 
     public PlayerManager() {
