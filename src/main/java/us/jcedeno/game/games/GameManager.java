@@ -24,13 +24,16 @@ public class GameManager extends Restorable {
 
     public GameManager(SquidGame squidInstance) {
         this.squidInstance = squidInstance;
+        // restore data from dManager json files.
+        this.restore(squidInstance.getDManager().gDataConfig());
+        // initialize the GreenLightManager.
         this.gLManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
     }
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
-        // TODO Auto-generated method stub
-
+        this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
+        //TODO Make this work with GreenLightManager.
     }
 
     @Override
