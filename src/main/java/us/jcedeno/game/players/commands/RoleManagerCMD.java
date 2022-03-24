@@ -5,8 +5,10 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import us.jcedeno.game.SquidGame;
 import us.jcedeno.game.global.utils.Strings;
 import us.jcedeno.game.players.PlayerManager;
 import us.jcedeno.game.players.enums.Role;
@@ -33,9 +35,13 @@ public class RoleManagerCMD extends BaseCommand {
 
         var squidParticipant = pManager.pData().getParticipant(name);
 
-        pManager.pData().toggleRoles(squidParticipant);
+        boolean already = !pManager.pData().changeRoles(squidParticipant, role);
 
-        sender.sendMessage(Strings.format(Strings.prefix + "&bEl rol del jugador &3" + player.getName() + " &bha sido asignado a &3" + role.name() + "&b."));
+        if (already) {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl rol del jugador " + name + " ya es " + role + "."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl rol del jugador &3" + player.getName() + " &bha sido asignado a &3" + role.name() + "&b."));
+        }
     }
 
     @Subcommand("getRole")
@@ -45,7 +51,25 @@ public class RoleManagerCMD extends BaseCommand {
 
         var role = (pManager.pData().getParticipant(name) instanceof SquidPlayer) ? Role.PLAYER : Role.GUARD;
 
-        sender.sendMessage(me.lofro.core.paper.utils.strings.Strings.format(Strings.prefix + "&bEl participante &3" + name + " &btiene el rol de &3" + role.name() + "&b."));
+        sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl participante &3" + name + " &btiene el rol de &3" + role.name() + "&b."));
+    }
+
+    @Subcommand("revive")
+    @CommandCompletion("@players")
+    public void revive(CommandSender sender, @Flags("other") Player player) {
+        var name = player.getName();
+
+        if (!pManager.isPlayer(player)) return;
+
+        var squidPlayer = pManager.pData().getPlayer(name);
+
+        if (squidPlayer.isDead()) {
+            squidPlayer.setDead(false);
+            player.setGameMode(GameMode.ADVENTURE);
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl jugador &3" + name + " &bha sido revivido."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl jugador " + name + " no esta muerto."));
+        }
     }
 
 }

@@ -86,7 +86,7 @@ public class GreenLightManager {
 
     public void endGame() {
 
-        gManager.getTimer().end();
+       gManager.getTimer().end();
 
         greenLightGame.cancel();
         this.isRunning = false;
@@ -94,8 +94,7 @@ public class GreenLightManager {
         if (this.lightState.equals(LightState.GREEN_LIGHT))
             gManager.getSquidInstance().registerListener(greenLightListener);
 
-        greenLightGame.setShootAllTaskID(
-                Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::shootAll, 20 * 10).getTaskId());
+        greenLightGame.setShootAllTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), () -> shootAll(true), 20 * 10).getTaskId());
 
         this.greenLightGame = new GreenLightGame(this);
     }
@@ -122,7 +121,7 @@ public class GreenLightManager {
         player.setHealth(0);
     }
 
-    public void shootAll() {
+    public void shootAll(boolean endGame) {
         ArrayList<Player> playerList = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(p -> {
             if (playerManager().isPlayer(p) && !playerManager().isDead(p)
@@ -130,7 +129,7 @@ public class GreenLightManager {
                 playerList.add(p);
             }
         });
-        new PlayerArrayQueueShootTask(this, playerList, 0, 40);
+        new PlayerArrayQueueShootTask(this, playerList, endGame, 0, 40);
     }
 
     public PlayerManager playerManager() {

@@ -185,7 +185,6 @@ public class PData {
             // Remove the guard, add him back to set as player.
             addPlayer(removeGuard(squidGuard).getName());
         }
-
     }
 
     public boolean changeRoles(SquidParticipant participant, Role role) {

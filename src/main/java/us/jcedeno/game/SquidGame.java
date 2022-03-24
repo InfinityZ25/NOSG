@@ -16,6 +16,7 @@ import us.jcedeno.game.data.LocationSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.game.data.DataManager;
 import us.jcedeno.game.games.GameManager;
+import us.jcedeno.game.global.commands.TimerCMD;
 import us.jcedeno.game.global.listeners.GlobalListener;
 import us.jcedeno.game.global.utils.Strings;
 import us.jcedeno.game.players.PlayerManager;
@@ -54,6 +55,8 @@ public class SquidGame extends JavaPlugin {
     private @Getter DataManager dManager;
     private @Getter PlayerManager pManager;
 
+    public static String prefix = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
+
     @Override
     public void onEnable() {
         instance = this;
@@ -72,9 +75,9 @@ public class SquidGame extends JavaPlugin {
                 new GlobalListener(pManager, gManager)
         );
 
-        this.commandManager = new PaperCommandManager(this);
+        registerCommands(commandManager, new TimerCMD());
 
-        Bukkit.getLogger().info(Strings.format(Strings.prefix + "&aEl plugin ha sido iniciado correctamente."));
+        Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido iniciado correctamente."));
     }
 
     @Override
@@ -84,7 +87,7 @@ public class SquidGame extends JavaPlugin {
 
         this.gManager.getTimer().removePlayers();
 
-        Bukkit.getLogger().info(Strings.format(Strings.prefix + "&aEl plugin ha sido desactivado correctamente."));
+        Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }
 
     /**

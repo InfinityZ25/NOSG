@@ -1,6 +1,8 @@
 package us.jcedeno.game.data;
 
 import us.jcedeno.game.SquidGame;
+import us.jcedeno.game.data.commands.DataCMD;
+import us.jcedeno.game.data.enums.SquidDataType;
 import us.jcedeno.game.data.utils.JsonConfig;
 
 /**
@@ -15,6 +17,8 @@ public class DataManager {
     public DataManager(final SquidGame instance) throws Exception {
         this.pDataConfig = new JsonConfig("pdata.json", instance.getDataFolder().getAbsolutePath());
         this.gDataConfig = new JsonConfig("gdata.json", instance.getDataFolder().getAbsolutePath());
+
+        SquidGame.getInstance().registerCommands(SquidGame.getInstance().getCommandManager(), new DataCMD(this));
     }
 
     public JsonConfig pDataConfig() {
@@ -31,6 +35,18 @@ public class DataManager {
     public void save() {
         SquidGame.getInstance().getPManager().save(pDataConfig);
         SquidGame.getInstance().getGManager().save(gDataConfig);
+    }
+
+    /**
+     * Function to save a specific data config.
+     *
+     * @param squidDataType plugin data type.
+     */
+    public void save(SquidDataType squidDataType) {
+        switch (squidDataType) {
+            case GAME_DATA -> SquidGame.getInstance().getGManager().save(gDataConfig);
+            case PLAYER_DATA -> SquidGame.getInstance().getPManager().save(pDataConfig);
+        }
     }
 
 }

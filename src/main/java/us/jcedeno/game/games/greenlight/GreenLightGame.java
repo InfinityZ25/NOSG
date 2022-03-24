@@ -53,7 +53,7 @@ public class GreenLightGame extends BukkitRunnable {
         }
 
         if (gLightManager.getGreenLightListener().getMovedList().size() > 0) {
-            new PlayerArrayQueueShootTask(gLightManager, gLightManager.getGreenLightListener().getMovedList(), 10, 20);
+            new PlayerArrayQueueShootTask(gLightManager, gLightManager.getGreenLightListener().getMovedList(), false, 0, 20);
             gLightManager.getGreenLightListener().getMovedList().clear();
         }
 

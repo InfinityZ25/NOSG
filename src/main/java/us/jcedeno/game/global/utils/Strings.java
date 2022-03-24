@@ -5,8 +5,6 @@ import org.bukkit.ChatColor;
 
 public class Strings {
 
-    public static String prefix = Strings.format("&f&lSquid&d&lOtaku&f&lGame &7>> &r");
-
     /**
      * Function to translate the given text into ChatColor format.
      *
