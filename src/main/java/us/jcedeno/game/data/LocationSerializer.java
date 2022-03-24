@@ -48,7 +48,6 @@ public class LocationSerializer implements JsonSerializer<Location>, JsonDeseria
 
     @Override
     public JsonElement serialize(Location src, Type typeOfSrc, JsonSerializationContext context) {
-        System.out.println("got here");
         var json = new JsonObject();
 
         json.addProperty("world", src.getWorld().getName());

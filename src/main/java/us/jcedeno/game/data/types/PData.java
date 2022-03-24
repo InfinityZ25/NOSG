@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import us.jcedeno.game.players.enums.Role;
 import us.jcedeno.game.players.objects.SquidGuard;
 import us.jcedeno.game.players.objects.SquidParticipant;
 import us.jcedeno.game.players.objects.SquidPlayer;
@@ -184,6 +185,23 @@ public class PData {
             // Remove the guard, add him back to set as player.
             addPlayer(removeGuard(squidGuard).getName());
         }
+
+    }
+
+    public boolean changeRoles(SquidParticipant participant, Role role) {
+        if (participant instanceof SquidPlayer squidPlayer) {
+            if (role == Role.PLAYER)
+                return false;
+            // Remove the player, add him back to set as guard.
+            addGuard(removePlayer(squidPlayer).getName());
+        } else if (participant instanceof SquidGuard squidGuard) {
+            if (role == Role.GUARD)
+                return false;
+            // Remove the guard, add him back to set as player.
+            addPlayer(removeGuard(squidGuard).getName());
+        }
+
+        return true;
 
     }
 

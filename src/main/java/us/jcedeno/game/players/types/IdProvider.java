@@ -15,7 +15,7 @@ public class IdProvider {
     private Stack<Integer> stack;
 
     public IdProvider() {
-        this.currentId = new AtomicInteger(0);
+        this.currentId = new AtomicInteger(1);
         this.stack = new Stack<>();
     }
 
