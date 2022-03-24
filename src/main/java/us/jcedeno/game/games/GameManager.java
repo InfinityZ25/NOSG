@@ -19,7 +19,7 @@ public class GameManager extends Restorable {
 
     private final @Getter SquidGame squidInstance;
 
-    private @Getter GData gData;
+    private GData gData;
     private GreenLightManager gLManager;
 
     public GameManager(SquidGame squidInstance) {
@@ -33,7 +33,7 @@ public class GameManager extends Restorable {
     @Override
     protected void restore(JsonConfig jsonConfig) {
         this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
-        //TODO Make this work with GreenLightManager.
+        // TODO Make this work with GreenLightManager.
     }
 
     @Override
@@ -45,6 +45,13 @@ public class GameManager extends Restorable {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @return the gData object.
+     */
+    public GData gData() {
+        return this.gData;
     }
 
 }

@@ -1,6 +1,5 @@
 package us.jcedeno.game.data.types;
 
-import lombok.Getter;
 import us.jcedeno.game.games.greenlight.types.GLightData;
 
 /**
@@ -10,9 +9,16 @@ import us.jcedeno.game.games.greenlight.types.GLightData;
  */
 public class GData {
 
-    private @Getter final GLightData greenLightData;
+    private GLightData greenLightData;
 
     public GData(GLightData greenLightData) {
         this.greenLightData = greenLightData;
+    }
+
+    /**
+     * @return the greenLightData
+     */
+    public GLightData gLightData() {
+        return greenLightData;
     }
 }
