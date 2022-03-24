@@ -26,8 +26,6 @@ public class BukkitTimer extends JTimer {
         bossBar.name(getTime(tick));
         bossBar.progress(progress());
 
-        System.out.println(bossBar.name());
-
         return tick;
     }
 
@@ -44,13 +42,4 @@ public class BukkitTimer extends JTimer {
         return (hours > 0 ? String.format("%02d:%02d:%02d", hours, minutes, seconds)
                 : String.format("%02d:%02d", minutes, seconds));
     }
-
-    public static void main(String[] args) {
-        var nTimer = BukkitTimer.bTimer(10).start();
-
-        while (!nTimer.isDone()) {
-
-        }
-    }
-
 }
