@@ -30,7 +30,7 @@ public class BukkitTimer extends JTimer {
     @Override
     public CompletableFuture<JTimer> start() {
         bossBar.name(getTime(time()));
-        addViewers();
+        addAllViewers();
         return super.start();
     }
 
@@ -57,7 +57,7 @@ public class BukkitTimer extends JTimer {
         }
     }
 
-    public void addViewers() {
+    public void addAllViewers() {
         Bukkit.getOnlinePlayers().forEach(this::addViewer);
     }
 
