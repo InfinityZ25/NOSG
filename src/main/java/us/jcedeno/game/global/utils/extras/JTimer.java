@@ -42,11 +42,16 @@ public class JTimer implements Runnable {
         } while (tick() >= 0);
     }
 
+    /**
+     * @return The percentage of the time left.
+     */
     public float progress() {
-        float f = (float) time / initialTime;
-        return f >= 0.0 ? f : 0.0f;
+        return Math.max(Math.min((float) time / initialTime, 0), 1);
     }
 
+    /**
+     * @return The total percentage of completion so far, inverse of progress().
+     */
     public float completion() {
         return 1 - progress();
     }
