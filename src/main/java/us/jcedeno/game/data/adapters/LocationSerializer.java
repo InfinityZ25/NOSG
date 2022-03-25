@@ -1,4 +1,4 @@
-package us.jcedeno.game.data;
+package us.jcedeno.game.data.adapters;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ public class LocationSerializer implements JsonSerializer<Location>, JsonDeseria
     @Override
     public Location deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        // TODO: Add checks such as isJsonObject to avoid exceptions.
         var jsonObject = json.getAsJsonObject();
         // Obtain elements from given json object.
         var world = jsonObject.get("world");

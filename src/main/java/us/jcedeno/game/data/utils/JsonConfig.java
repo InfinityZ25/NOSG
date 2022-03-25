@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import lombok.Setter;
-import us.jcedeno.game.data.LocationSerializer;
+import us.jcedeno.game.data.adapters.LocationSerializer;
 
 /**
  * A class to save any state from objects to json files.

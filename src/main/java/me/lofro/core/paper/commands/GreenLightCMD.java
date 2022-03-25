@@ -1,24 +1,27 @@
 package me.lofro.core.paper.commands;
 
+import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Subcommand;
 import me.lofro.core.paper.Game;
 import me.lofro.core.paper.Main;
 import me.lofro.core.paper.games.GreenLightGame;
 import me.lofro.core.paper.utils.strings.Strings;
-import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 @CommandAlias("greenLight")
 @CommandPermission("admin.perm")
 public class GreenLightCMD extends BaseCommand {
 
-    private final Main instance;
     private final Game game;
 
     public GreenLightCMD(Main instance) {
-        this.instance = instance;
         this.game = instance.getGame();
     }
 

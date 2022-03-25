@@ -1,4 +1,4 @@
-package us.jcedeno.game.players.adapter;
+package us.jcedeno.game.players.adapters;
 /*
  * Copyright (C) 2011 Google Inc.
  *

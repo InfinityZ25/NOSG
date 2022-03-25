@@ -24,7 +24,6 @@ import me.lofro.core.paper.commands.GreenLightCMD;
 import me.lofro.core.paper.commands.HideSeekCMD;
 import me.lofro.core.paper.commands.SquidCMD;
 import me.lofro.core.paper.commands.TurretTestCMD;
-import us.jcedeno.game.data.LocationSerializer;
 import me.lofro.core.paper.listeners.GlobalListener;
 import me.lofro.core.paper.utils.JsonConfig;
 import me.lofro.core.paper.utils.NegativeSpaces;
@@ -35,6 +34,7 @@ import me.lofro.core.paper.utils.rapidinv.RapidInvManager;
 import me.lofro.core.paper.utils.strings.Strings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import us.jcedeno.game.data.adapters.LocationSerializer;
 
 public class Main extends JavaPlugin {
 

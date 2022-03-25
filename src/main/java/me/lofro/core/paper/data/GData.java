@@ -10,7 +10,7 @@ import org.bukkit.Location;
 
 import me.lofro.core.paper.Game;
 import me.lofro.core.paper.utils.JsonConfig;
-import us.jcedeno.game.data.LocationSerializer;
+import us.jcedeno.game.data.adapters.LocationSerializer;
 
 public class GData {
 

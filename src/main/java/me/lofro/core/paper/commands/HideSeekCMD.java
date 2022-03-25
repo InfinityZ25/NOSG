@@ -1,5 +1,7 @@
 package me.lofro.core.paper.commands;
 
+import org.bukkit.command.CommandSender;
+
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
@@ -8,17 +10,14 @@ import me.lofro.core.paper.Game;
 import me.lofro.core.paper.Main;
 import me.lofro.core.paper.games.HideSeekGame;
 import me.lofro.core.paper.utils.strings.Strings;
-import org.bukkit.command.CommandSender;
 
 @CommandAlias("hideGame")
 @CommandPermission("admin.perm")
 public class HideSeekCMD extends BaseCommand {
 
-    private final Main instance;
     private final Game game;
 
     public HideSeekCMD(Main instance) {
-        this.instance = instance;
         this.game = instance.getGame();
     }
 
@@ -52,13 +51,16 @@ public class HideSeekCMD extends BaseCommand {
             switch (hideGameState) {
                 case HIDE -> {
                     game.getHideSeekGame().updateHideTime(time);
-                    sender.sendMessage(Strings.format(game.getName() + "&bEl tiempo para &3" + hideGameState + "&b ha sido actualizado con éxito"));
+                    sender.sendMessage(Strings.format(game.getName() + "&bEl tiempo para &3" + hideGameState
+                            + "&b ha sido actualizado con éxito"));
                 }
                 case SEEK -> {
                     game.getHideSeekGame().updateSeekTime(time);
-                    sender.sendMessage(Strings.format(game.getName() + "&bEl tiempo para &3" + hideGameState + "&b ha sido actualizado con éxito"));
+                    sender.sendMessage(Strings.format(game.getName() + "&bEl tiempo para &3" + hideGameState
+                            + "&b ha sido actualizado con éxito"));
                 }
-                default -> sender.sendMessage(Strings.format(game.getName() + "&cEl modo de juego escogido no puede ser actualizado."));
+                default -> sender.sendMessage(
+                        Strings.format(game.getName() + "&cEl modo de juego escogido no puede ser actualizado."));
             }
         } else {
             sender.sendMessage(Strings.format(game.getName() + "&cEl juego no está siendo ejecutado."));

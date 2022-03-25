@@ -2,8 +2,6 @@ package me.lofro.core.paper.data;
 
 import java.util.List;
 
-import com.google.gson.Gson;
-
 import me.lofro.core.paper.Game;
 import me.lofro.core.paper.Main;
 import me.lofro.core.paper.objects.SquidGuard;
