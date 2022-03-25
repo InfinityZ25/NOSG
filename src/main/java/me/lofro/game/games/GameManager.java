@@ -1,16 +1,17 @@
 package me.lofro.game.games;
 
-import me.lofro.game.SquidGame;
-import me.lofro.game.data.types.GData;
-import me.lofro.game.data.utils.JsonConfig;
-import me.lofro.game.games.greenlight.commands.GreenLightCMD;
-import me.lofro.game.games.greenlight.types.GLightData;
-import me.lofro.game.global.interfaces.Restorable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import lombok.Getter;
+import me.lofro.game.SquidGame;
+import me.lofro.game.data.types.GData;
+import me.lofro.game.data.utils.JsonConfig;
 import me.lofro.game.games.greenlight.GreenLightManager;
+import me.lofro.game.games.greenlight.commands.GreenLightCMD;
+import me.lofro.game.games.greenlight.types.GLightData;
+import me.lofro.game.global.interfaces.Restorable;
+import me.lofro.game.global.utils.Timer;
 import me.lofro.game.global.utils.extras.BukkitTimer;
 
 /**
@@ -23,6 +24,7 @@ public class GameManager extends Restorable<SquidGame> {
     private final @Getter SquidGame squidInstance;
 
     private final @Getter BukkitTimer bukkitTimer;
+    private final @Getter Timer timer;
 
     private GData gData;
     private GreenLightManager gLManager;
@@ -35,6 +37,9 @@ public class GameManager extends Restorable<SquidGame> {
         this.gLManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
         // initialize the Timer.
         this.bukkitTimer = BukkitTimer.bTimer(0);
+        this.timer = new Timer();
+        // Run the task
+        this.timer.runTaskTimerAsynchronously(squidInstance, 20L, 20L);
 
         squidInstance.registerCommands(squidInstance.getCommandManager(),
                 new GreenLightCMD(gLManager));
