@@ -1,10 +1,9 @@
 package us.jcedeno.game.games;
 
-import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import lombok.Getter;
-import org.bukkit.Location;
 import us.jcedeno.game.SquidGame;
 import us.jcedeno.game.data.types.GData;
 import us.jcedeno.game.data.utils.JsonConfig;
@@ -12,7 +11,6 @@ import us.jcedeno.game.games.greenlight.GreenLightManager;
 import us.jcedeno.game.games.greenlight.commands.GreenLightCMD;
 import us.jcedeno.game.games.greenlight.types.GLightData;
 import us.jcedeno.game.global.interfaces.Restorable;
-import us.jcedeno.game.global.utils.Timer;
 import us.jcedeno.game.global.utils.extras.BukkitTimer;
 
 /**
@@ -21,7 +19,7 @@ import us.jcedeno.game.global.utils.extras.BukkitTimer;
  * 
  * @author jcedeno
  */
-public class GameManager extends Restorable {
+public class GameManager extends Restorable<SquidGame> {
 
     private final @Getter SquidGame squidInstance;
 
@@ -30,7 +28,7 @@ public class GameManager extends Restorable {
     private GData gData;
     private GreenLightManager gLManager;
 
-    public GameManager(SquidGame squidInstance) {
+    public GameManager(final SquidGame squidInstance) {
         this.squidInstance = squidInstance;
         // restore data from dManager json files.
         this.restore(squidInstance.getDManager().gDataConfig());
@@ -40,15 +38,16 @@ public class GameManager extends Restorable {
         this.bukkitTimer = BukkitTimer.bTimer(0);
 
         squidInstance.registerCommands(squidInstance.getCommandManager(),
-                new GreenLightCMD(gLManager)
-        );
+                new GreenLightCMD(gLManager));
     }
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
+        // TODO: Fix whatever the fuck this is.
         this.gData = (SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class).gLightData() != null)
                 ? SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class)
-                : new GData(new GLightData(new Location(Bukkit.getWorlds().get(0), -20, -29, -35), new Location(Bukkit.getWorlds().get(0), -146, 3, 18)));
+                : new GData(new GLightData(new Location(Bukkit.getWorlds().get(0), -20, -29, -35),
+                        new Location(Bukkit.getWorlds().get(0), -146, 3, 18)));
     }
 
     @Override

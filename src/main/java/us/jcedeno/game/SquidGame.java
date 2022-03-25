@@ -1,6 +1,5 @@
 package us.jcedeno.game;
 
-import co.aikar.commands.BaseCommand;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -10,11 +9,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
-import us.jcedeno.game.data.LocationSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import us.jcedeno.game.data.DataManager;
+import us.jcedeno.game.data.LocationSerializer;
 import us.jcedeno.game.games.GameManager;
 import us.jcedeno.game.global.commands.TimerCMD;
 import us.jcedeno.game.global.listeners.GlobalListener;
@@ -72,8 +72,7 @@ public class SquidGame extends JavaPlugin {
         this.gManager = new GameManager(this);
 
         registerListeners(
-                new GlobalListener(pManager, gManager)
-        );
+                new GlobalListener(pManager, gManager));
 
         registerCommands(commandManager, new TimerCMD());
 

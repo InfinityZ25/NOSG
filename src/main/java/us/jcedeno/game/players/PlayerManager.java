@@ -1,9 +1,9 @@
 package us.jcedeno.game.players;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import net.kyori.adventure.text.Component;
 import us.jcedeno.game.SquidGame;
 import us.jcedeno.game.data.types.PData;
 import us.jcedeno.game.data.utils.JsonConfig;
@@ -17,18 +17,27 @@ import us.jcedeno.game.players.commands.RoleManagerCMD;
  * @author jcedeno
  * 
  */
-public class PlayerManager extends Restorable {
-    protected transient SquidGame instance;
+public class PlayerManager extends Restorable<SquidGame> {
     private PData playerData;
 
+    /**
+     * Constructor for Bukkit instantiation.
+     * 
+     * @param instance The instance of the plugin.
+     */
     public PlayerManager(final SquidGame instance) {
-        this.instance = instance;
+        super(instance);
         // restore state
         restore(instance.getDManager().pDataConfig());
         instance.registerCommands(instance.getCommandManager(), new RoleManagerCMD(this));
     }
 
+    /**
+     * Constructor for Testing environments.
+     */
     public PlayerManager() {
+        super();
+        // initialize pData
         this.playerData = new PData();
     }
 
@@ -79,5 +88,4 @@ public class PlayerManager extends Restorable {
                 player.sendMessage(text);
         });
     }
-
 }

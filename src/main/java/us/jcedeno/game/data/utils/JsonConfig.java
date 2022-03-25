@@ -10,11 +10,19 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import org.bukkit.Location;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import lombok.Setter;
 import us.jcedeno.game.data.LocationSerializer;
 
+/**
+ * A class to save any state from objects to json files.
+ * 
+ * TODO: Stop throwing "Exception" and throw "RuntimeException" instead.
+ * 
+ * @author jcedeno
+ */
 public class JsonConfig {
     private Gson gson = new GsonBuilder().registerTypeAdapter(Location.class, new LocationSerializer())
             .registerTypeAdapter(Location[].class, LocationSerializer.getArraySerializer()).setPrettyPrinting()
@@ -33,6 +41,19 @@ public class JsonConfig {
         } else {
             readFile(file);
         }
+    }
+
+    /**
+     * A static constructor that creates a new {@link JsonConfig} object in the
+     * specified plugin's folder.
+     * 
+     * @param filename The name of the file to create.
+     * @param plugin   The plugin instance.
+     * @return A new {@link JsonConfig} object.
+     * @throws Exception If the file cannot be created.
+     */
+    public static JsonConfig cfg(String filename, JavaPlugin plugin) throws Exception {
+        return new JsonConfig(filename, plugin.getDataFolder().getAbsolutePath());
     }
 
     public JsonConfig(String filename) throws Exception {
