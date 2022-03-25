@@ -10,8 +10,8 @@ import org.bukkit.util.Vector;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.lofro.core.paper.utils.LineVector;
 import me.lofro.core.paper.utils.turrets.exceptions.TurretListEmptyException;
+import us.jcedeno.game.global.utils.LineVector;
 
 /**
  * A class that holds the logic for GreenLight/RedLight turrets.

@@ -1,4 +1,4 @@
-package me.lofro.core.paper.utils;
+package us.jcedeno.game.global.utils;
 
 import java.util.ArrayList;
 import java.util.List;

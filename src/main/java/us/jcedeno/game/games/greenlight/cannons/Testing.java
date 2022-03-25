@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.util.Vector;
 
 import lombok.AllArgsConstructor;
-import me.lofro.core.paper.utils.LineVector;
+import us.jcedeno.game.global.utils.LineVector;
 
 public class Testing {
 
