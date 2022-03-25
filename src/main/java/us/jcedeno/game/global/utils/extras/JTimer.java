@@ -9,7 +9,7 @@ import lombok.Setter;
 public class JTimer implements Runnable {
     private @Setter int time;
     private @Getter final int initialTime;
-    private final CompletableFuture<JTimer> future;
+    protected final CompletableFuture<JTimer> future;
     protected @Getter Thread thread;
 
     public JTimer(int time) {
