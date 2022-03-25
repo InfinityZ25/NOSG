@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.bukkit.Bukkit;
+
 import lombok.Getter;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 
 public class BukkitTimer extends JTimer {
     private @Getter final BossBar bossBar;
@@ -28,6 +29,7 @@ public class BukkitTimer extends JTimer {
 
     @Override
     public CompletableFuture<JTimer> start() {
+        bossBar.name(getTime(time()));
         addViewers();
         return super.start();
     }

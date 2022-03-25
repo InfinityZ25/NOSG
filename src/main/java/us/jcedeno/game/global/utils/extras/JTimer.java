@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class JTimer implements Runnable {
-    private @Getter @Setter int time;
+    private @Setter int time;
     private @Getter final int initialTime;
     private final CompletableFuture<JTimer> future;
     protected @Getter Thread thread;
@@ -49,6 +49,9 @@ public class JTimer implements Runnable {
     public float completion() {
         return 1 - progress();
     }
+    protected int time(){
+        return this.time;
+    }
 
     public CompletableFuture<JTimer> start() {
         this.thread = new Thread(this, "Timer@" + UUID.randomUUID());
@@ -59,6 +62,7 @@ public class JTimer implements Runnable {
     public void end() {
         time = 0;
     }
+    
 
     public static BukkitTimer bTimer(int seconds) {
         return new BukkitTimer(seconds);
