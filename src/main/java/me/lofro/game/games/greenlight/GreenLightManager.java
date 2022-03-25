@@ -86,8 +86,6 @@ public class GreenLightManager {
 
     public void endGame() {
 
-       gManager.getTimer().end();
-
         greenLightGame.cancel();
         this.isRunning = false;
 
