@@ -1,4 +1,4 @@
-package me.lofro.game.global.utils;
+package me.lofro.game.games.greenlight.utils.tasks.timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
 
-public class Timer extends BukkitRunnable {
+public class GameTimer extends BukkitRunnable {
 
     private int seconds;
 
@@ -23,7 +23,7 @@ public class Timer extends BukkitRunnable {
 
     private @Setter @Getter boolean isActive = false;
 
-    public Timer() {
+    public GameTimer() {
         this.seconds = 0;
         this.bossBar = BossBar.bossBar(formatTime(this.seconds), 1.0f, Color.WHITE, Overlay.PROGRESS);
     }

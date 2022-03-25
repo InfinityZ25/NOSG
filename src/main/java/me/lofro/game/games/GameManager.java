@@ -11,7 +11,7 @@ import me.lofro.game.games.greenlight.GreenLightManager;
 import me.lofro.game.games.greenlight.commands.GreenLightCMD;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.global.interfaces.Restorable;
-import me.lofro.game.global.utils.Timer;
+import me.lofro.game.games.greenlight.utils.tasks.timer.GameTimer;
 
 /**
  * A class to manage all commands, objects, events, & listeners for each game in
@@ -22,7 +22,8 @@ public class GameManager extends Restorable<SquidGame> {
 
     private final @Getter SquidGame squidInstance;
 
-    private final @Getter Timer timer;
+    private final @Getter
+    GameTimer timer;
 
     private GData gData;
     private GreenLightManager gLManager;
@@ -34,7 +35,7 @@ public class GameManager extends Restorable<SquidGame> {
         // initialize the GreenLightManager.
         this.gLManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
         // initialize the Timer.
-        this.timer = new Timer();
+        this.timer = new GameTimer();
         // Run the task
         this.timer.runTaskTimerAsynchronously(squidInstance, 20L, 20L);
 

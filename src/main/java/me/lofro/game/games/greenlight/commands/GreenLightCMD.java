@@ -68,11 +68,24 @@ public class GreenLightCMD extends BaseCommand {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
         } else {
-            var gData = gLightManager.getGManager().gData().gLightData();
+            var gLightData = gLightManager.getGManager().gData().gLightData();
 
-            gData.setCubeLower(cubeLower);
-            gData.setCubeUpper(cubeUpper);
+            gLightData.setCubeLower(cubeLower);
+            gLightData.setCubeUpper(cubeUpper);
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cubo de juego ha sido actualizado correctamente."));
+        }
+    }
+
+    @Subcommand("addCannon")
+    @CommandCompletion("@location")
+    public void addCannon(CommandSender sender, Location cannon) {
+        if (gLightManager.isRunning()) {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar los cañones mientras el juego está siendo ejecutado."));
+        } else {
+            var gLightData = gLightManager.getGManager().gData().gLightData();
+
+            gLightData.getCannonLocations().add(cannon);
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cañón ha sido añadido correctamente."));
         }
     }
 }
