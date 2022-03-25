@@ -3,8 +3,6 @@ package me.lofro.game;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import me.lofro.game.global.listeners.GlobalListener;
-import me.lofro.game.global.utils.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
@@ -14,16 +12,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import me.lofro.game.data.DataManager;
 import me.lofro.game.data.adapters.LocationSerializer;
 import me.lofro.game.games.GameManager;
 import me.lofro.game.global.commands.TimerCMD;
+import me.lofro.game.global.listeners.GlobalListener;
+import me.lofro.game.global.utils.Strings;
 import me.lofro.game.players.PlayerManager;
 import me.lofro.game.players.adapters.RuntimeTypeAdapterFactory;
 import me.lofro.game.players.objects.SquidGuard;
 import me.lofro.game.players.objects.SquidParticipant;
 import me.lofro.game.players.objects.SquidPlayer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 /**
  * Entrypoint for Squid Otaku Game plugin.
@@ -83,7 +83,7 @@ public class SquidGame extends JavaPlugin {
         // Backup data onDisable
         this.dManager.save();
 
-        this.gManager.getBukkitTimer().removeViewers();
+        this.gManager.getTimer().removePlayers();
 
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }
@@ -106,7 +106,7 @@ public class SquidGame extends JavaPlugin {
         return miniMessage;
     }
 
-    //TODO MOVER A OTRA CLASE.
+    // TODO MOVER A OTRA CLASE.
 
     public void registerCommands(PaperCommandManager manager, BaseCommand... commandExecutors) {
         for (BaseCommand commandExecutor : commandExecutors) {

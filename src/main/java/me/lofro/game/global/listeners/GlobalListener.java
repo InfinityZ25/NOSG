@@ -1,6 +1,5 @@
 package me.lofro.game.global.listeners;
 
-import me.lofro.game.global.utils.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -18,12 +17,13 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import me.lofro.game.games.GameManager;
+import me.lofro.game.global.utils.Strings;
 import me.lofro.game.global.utils.datacontainers.Data;
 import me.lofro.game.global.utils.datacontainers.PlayerIsNotOnlineException;
 import me.lofro.game.players.PlayerManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class GlobalListener implements Listener {
 
@@ -53,8 +53,9 @@ public class GlobalListener implements Listener {
             }
         }
 
-        var timer = gManager.getBukkitTimer();
-        if (timer.isActive()) timer.addViewer(player);
+        var timer = gManager.getTimer();
+        if (timer.isActive())
+            timer.addPlayer(player);
     }
 
     @EventHandler
@@ -67,8 +68,8 @@ public class GlobalListener implements Listener {
         pManager.guardMessage(
                 Component.text(Strings.format("&7El jugador &8" + name + " &7ha abandonado el servidor.")));
 
-        var timer = gManager.getBukkitTimer();
-        timer.removeViewer(player);
+        var timer = gManager.getTimer();
+        timer.removePlayer(player);
     }
 
     @EventHandler
@@ -154,9 +155,12 @@ public class GlobalListener implements Listener {
         var player = e.getPlayer();
 
         if (pManager.isPlayer(player)) {
-            if (e.getCause().equals(PlayerGameModeChangeEvent.Cause.COMMAND) || e.getCause().equals(PlayerGameModeChangeEvent.Cause.DEFAULT_GAMEMODE)) {
+            if (e.getCause().equals(PlayerGameModeChangeEvent.Cause.COMMAND)
+                    || e.getCause().equals(PlayerGameModeChangeEvent.Cause.DEFAULT_GAMEMODE)) {
                 e.setCancelled(true);
-                if (player.isOp()) player.sendMessage(Strings.format("&cTu modo de juego no ha sido actualizado ya que tu rol es PLAYER."));
+                if (player.isOp())
+                    player.sendMessage(
+                            Strings.format("&cTu modo de juego no ha sido actualizado ya que tu rol es PLAYER."));
             }
         }
     }

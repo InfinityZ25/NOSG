@@ -74,8 +74,7 @@ public class GreenLightManager {
 
         this.isRunning = true;
 
-        gManager.getBukkitTimer().setTime(seconds);
-        gManager.getBukkitTimer().start();
+        gManager.getTimer().start(seconds);
 
         greenLightGame.setTaskID(greenLightGame.runTaskTimer(gManager.getSquidInstance(), 0, 20).getTaskId());
 
@@ -87,7 +86,7 @@ public class GreenLightManager {
 
     public void endGame() {
 
-       gManager.getBukkitTimer().end();
+       gManager.getTimer().end();
 
         greenLightGame.cancel();
         this.isRunning = false;
@@ -104,7 +103,7 @@ public class GreenLightManager {
         Bukkit.getScheduler().cancelTask(greenLightGame.getEndTaskID());
         Bukkit.getScheduler().cancelTask(greenLightGame.getShootAllTaskID());
 
-        gManager.getBukkitTimer().end();
+        gManager.getTimer().end();
 
         greenLightGame.cancel();
         this.isRunning = false;
