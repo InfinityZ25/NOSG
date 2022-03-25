@@ -52,7 +52,8 @@ public class GlobalListener implements Listener {
         }
 
         var timer = gManager.getBukkitTimer();
-        timer.addViewer(player);
+        if (timer.isActive())
+            timer.addViewer(player);
     }
 
     @EventHandler

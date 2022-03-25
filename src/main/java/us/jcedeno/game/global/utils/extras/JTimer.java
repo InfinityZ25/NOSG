@@ -43,13 +43,15 @@ public class JTimer implements Runnable {
     }
 
     public float progress() {
-        return (float) time / initialTime;
+        float f = (float) time / initialTime;
+        return f >= 0.0 ? f : 0.0f;
     }
 
     public float completion() {
         return 1 - progress();
     }
-    protected int time(){
+
+    protected int time() {
         return this.time;
     }
 
@@ -62,7 +64,6 @@ public class JTimer implements Runnable {
     public void end() {
         time = 0;
     }
-    
 
     public static BukkitTimer bTimer(int seconds) {
         return new BukkitTimer(seconds);

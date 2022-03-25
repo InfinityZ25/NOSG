@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 public class BukkitTimer extends JTimer {
     private @Getter final BossBar bossBar;
     private final List<Audience> audience = new ArrayList<>();
+    private @Getter boolean active = false;
 
     public BukkitTimer(final int time, final BossBar bossbar) {
         super(time);
@@ -24,21 +25,26 @@ public class BukkitTimer extends JTimer {
 
     public BukkitTimer(final int time) {
         super(time);
-        this.bossBar = BossBar.bossBar(getTime(time), 1, Color.WHITE, Overlay.PROGRESS);
+        this.bossBar = BossBar.bossBar(formatTime(time), 1, Color.WHITE, Overlay.PROGRESS);
     }
 
     @Override
     public CompletableFuture<JTimer> start() {
-        bossBar.name(getTime(time()));
-        addViewers();
+        if (active)
+            throw new IllegalStateException("Timer is already running");
+        this.active = true;
+        bossBar.name(formatTime(time()));
+        addAllViewers();
         return super.start();
     }
 
     @Override
     protected int tick() {
+        // Progress the bar before the time is updated.
+        bossBar.progress(progress());
         var tick = super.tick();
-        // Update bar's name
-        bossBar.name(getTime(tick));
+        // Update bar's name.
+        bossBar.name(formatTime(tick));
 
         return tick;
     }
@@ -48,6 +54,7 @@ public class BukkitTimer extends JTimer {
         super.onComplete();
         // Remove bar from players
         audience.forEach(a -> a.hideBossBar(bossBar));
+        this.active = false;
     }
 
     public void addViewer(Audience player) {
@@ -57,7 +64,7 @@ public class BukkitTimer extends JTimer {
         }
     }
 
-    public void addViewers() {
+    public void addAllViewers() {
         Bukkit.getOnlinePlayers().forEach(this::addViewer);
     }
 
@@ -72,7 +79,7 @@ public class BukkitTimer extends JTimer {
         Bukkit.getOnlinePlayers().forEach(this::removeViewer);
     }
 
-    private static Component getTime(final int time) {
+    private static Component formatTime(final int time) {
         return Component.text(timeConvert(time));
     }
 
