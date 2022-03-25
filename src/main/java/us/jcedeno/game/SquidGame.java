@@ -85,7 +85,7 @@ public class SquidGame extends JavaPlugin {
         // Backup data onDisable
         this.dManager.save();
 
-        this.gManager.getTimer().removePlayers();
+        this.gManager.getBukkitTimer().removeViewers();
 
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }

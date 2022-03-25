@@ -2,6 +2,7 @@ package us.jcedeno.game.global.utils.extras;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import lombok.Getter;
 import net.kyori.adventure.audience.Audience;
@@ -9,10 +10,11 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.bossbar.BossBar.Color;
 import net.kyori.adventure.bossbar.BossBar.Overlay;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 
 public class BukkitTimer extends JTimer {
     private @Getter final BossBar bossBar;
-    private List<Audience> audience = new ArrayList<>();
+    private final List<Audience> audience = new ArrayList<>();
 
     public BukkitTimer(final int time, final BossBar bossbar) {
         super(time);
@@ -25,11 +27,16 @@ public class BukkitTimer extends JTimer {
     }
 
     @Override
+    public CompletableFuture<JTimer> start() {
+        addViewers();
+        return super.start();
+    }
+
+    @Override
     protected int tick() {
         var tick = super.tick();
         // Update bar's name
         bossBar.name(getTime(tick));
-        bossBar.progress(progress());
 
         return tick;
     }
@@ -48,11 +55,19 @@ public class BukkitTimer extends JTimer {
         }
     }
 
+    public void addViewers() {
+        Bukkit.getOnlinePlayers().forEach(this::addViewer);
+    }
+
     public void removeViewer(Audience player) {
         if (audience.contains(player)) {
             audience.remove(player);
             player.hideBossBar(bossBar);
         }
+    }
+
+    public void removeViewers() {
+        Bukkit.getOnlinePlayers().forEach(this::removeViewer);
     }
 
     private static Component getTime(final int time) {

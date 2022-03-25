@@ -50,8 +50,8 @@ public class GlobalListener implements Listener {
             }
         }
 
-        var timer = gManager.getTimer();
-        timer.addPlayer(player);
+        var timer = gManager.getBukkitTimer();
+        timer.addViewer(player);
     }
 
     @EventHandler
@@ -63,8 +63,8 @@ public class GlobalListener implements Listener {
 
         pManager.guardMessage(Component.text(Strings.format("&7El jugador &8" + name + " &7ha abandonado el servidor.")));
 
-        var timer = gManager.getTimer();
-        timer.removePlayer(player);
+        var timer = gManager.getBukkitTimer();
+        timer.removeViewer(player);
     }
 
     @EventHandler

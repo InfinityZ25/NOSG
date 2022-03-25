@@ -13,6 +13,7 @@ import us.jcedeno.game.games.greenlight.commands.GreenLightCMD;
 import us.jcedeno.game.games.greenlight.types.GLightData;
 import us.jcedeno.game.global.interfaces.Restorable;
 import us.jcedeno.game.global.utils.Timer;
+import us.jcedeno.game.global.utils.extras.BukkitTimer;
 
 /**
  * A class to manage all commands, objects, events, & listeners for each game in
@@ -24,7 +25,7 @@ public class GameManager extends Restorable {
 
     private final @Getter SquidGame squidInstance;
 
-    private final @Getter Timer timer;
+    private final @Getter BukkitTimer bukkitTimer;
 
     private GData gData;
     private GreenLightManager gLManager;
@@ -36,9 +37,7 @@ public class GameManager extends Restorable {
         // initialize the GreenLightManager.
         this.gLManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
         // initialize the Timer.
-        this.timer = new Timer(squidInstance, (int) System.currentTimeMillis());
-        timer.runTaskTimerAsynchronously(squidInstance, 0, 20);
-        timer.addPlayers();
+        this.bukkitTimer = BukkitTimer.bTimer(0);
 
         squidInstance.registerCommands(squidInstance.getCommandManager(),
                 new GreenLightCMD(gLManager)

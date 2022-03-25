@@ -4,9 +4,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class JTimer implements Runnable {
-    private @Getter int time;
+    private @Getter @Setter int time;
     private @Getter final int initialTime;
     private final CompletableFuture<JTimer> future;
     protected @Getter Thread thread;
@@ -18,7 +19,7 @@ public class JTimer implements Runnable {
     }
 
     protected int tick() {
-        if (time > 0) {
+        if (time >= 0) {
             return time--;
         }
         onComplete();
@@ -38,9 +39,7 @@ public class JTimer implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-        } while (tick() > 0);
-
+        } while (tick() >= 0);
     }
 
     public float progress() {
@@ -55,6 +54,10 @@ public class JTimer implements Runnable {
         this.thread = new Thread(this, "Timer@" + UUID.randomUUID());
         this.thread.start();
         return future;
+    }
+
+    public void end() {
+        time = 0;
     }
 
     public static BukkitTimer bTimer(int seconds) {
