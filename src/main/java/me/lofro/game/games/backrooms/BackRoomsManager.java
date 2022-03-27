@@ -13,6 +13,7 @@ import me.lofro.game.players.PlayerManager;
 import me.lofro.game.players.objects.SquidPlayer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.potion.PotionEffect;
@@ -45,18 +46,18 @@ public class BackRoomsManager {
     private Vector middleCubeCenter2D;
     private @Getter Location middleCubeCenter;
 
-    private Vector centerGoal2D;
-    private @Getter Location centerGoal;
+    private Vector cubeCenter2D;
+    private @Getter Location cubeCenter;
 
     private final @Getter String gamePrefix = Strings.format("&6&lBack&e&lRooms &7>> &r");
 
     public BackRoomsManager(GameManager gameManager, World world) {
         this.gManager = gameManager;
         this.world = world;
+        this.cubeCenter = Locations.getCubeCenter(world, cubeLower(), cubeUpper());
         this.middleCubeCenter = Locations.getCubeCenter(world, middleCubeLower(), middleCubeUpper());
-        this.centerGoal = Locations.getCubeCenter(world, backRoomsData().getGoalLower(), backRoomsData().getGoalUpper());
+        setCubeCenter2D(cubeCenter);
         setMiddleCubeCenter(middleCubeCenter);
-        setCenterGoal2D(centerGoal);
         this.preBackRoomsListener = new PreBackRoomsListener(this);
         this.backRoomsListener = new BackRoomsListener(this);
     }
@@ -72,8 +73,6 @@ public class BackRoomsManager {
         this.winnerLimit = playerLimit;
         this.isRunning = true;
 
-        this.winners.clear();
-
         gManager.getSquidInstance().unregisterListener(preBackRoomsListener);
         gManager.getSquidInstance().registerListener(backRoomsListener);
 
@@ -82,9 +81,9 @@ public class BackRoomsManager {
         gManager.getTimer().start(safeSeconds);
 
         Bukkit.getOnlinePlayers().forEach(p -> {
-            p.playSound(p.getLocation(), "sfk.backrooms_intro", 1f, 1f);
+            p.playSound(p.getLocation(), "sfx.backrooms_intro", 1f, 1f);
 
-            if (!playerManager().isPlayer(p)) return;
+            if (!playerManager().isPlayer(p) || p.getGameMode().equals(GameMode.SPECTATOR) || p.getGameMode().equals(GameMode.CREATIVE)) return;
 
             p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0, false, false));
         });
@@ -105,22 +104,23 @@ public class BackRoomsManager {
 
         gManager.getTimer().end();
 
+        this.winners.clear();
+
         gManager.getSquidInstance().unregisterListener(backRoomsListener);
     }
 
+    public void killLosers() {
+        var losers = backRoomsListener.getLosers();
+
+        losers.values().forEach(p -> p.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1, false, false)));
+    }
+
     public void endGame() {
-        var losers = Bukkit.getOnlinePlayers().stream().filter(p -> !winners.containsKey(p.getName()));
-
-        losers.forEach(l -> {
-            if (!playerManager().isPlayer(l)) return;
-            l.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, 1, false, false));
-        });
-
-        Bukkit.getScheduler().runTaskLater(gameManager().getSquidInstance(), () -> {
-            changeState(BackRoomsState.NONE);
-            gameManager().getSquidInstance().unregisterListener(backRoomsListener);
-            this.isRunning = false;
-        }, 10 * 20L);
+        changeState(BackRoomsState.NONE);
+        this.winners.clear();
+        backRoomsListener.getLosers().clear();
+        this.isRunning = false;
+        gameManager().getSquidInstance().unregisterListener(backRoomsListener);
     }
 
     public void changeState(BackRoomsState backRoomsState) {
@@ -140,6 +140,14 @@ public class BackRoomsManager {
         return gManager.gData().backRoomsData();
     }
 
+    public Location cubeLower() {
+        return backRoomsData().getCubeLower();
+    }
+
+    public Location cubeUpper() {
+        return backRoomsData().getCubeUpper();
+    }
+
     public Location middleCubeLower() {
         return backRoomsData().getMiddleCubeLower();
     }
@@ -148,12 +156,21 @@ public class BackRoomsManager {
         return backRoomsData().getMiddleCubeUpper();
     }
 
-    public boolean inGoal(Location location) {
-        return Locations.isInCube(backRoomsData().getGoalLower(),backRoomsData().getGoalUpper(), location);
+    public boolean inCube(Location location) {
+        return Locations.isInCube(backRoomsData().getCubeLower(), backRoomsData().getCubeUpper(), location);
     }
 
     public boolean isMiddleCube(Location location) {
         return Locations.isInCube(middleCubeLower(), middleCubeUpper(), location);
+    }
+
+    public Vector cubeCenter2D() {
+        return this.cubeCenter2D.clone();
+    }
+
+    public void setCubeCenter2D(Location location) {
+        this.cubeCenter = location;
+        this.cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
     }
 
     public void setMiddleCubeCenter(Location location) {
@@ -161,17 +178,8 @@ public class BackRoomsManager {
         this.middleCubeCenter2D = new Vector(location.getX(), 0, location.getZ());
     }
 
-    public void setCenterGoal2D(Location location) {
-        this.centerGoal = location;
-        this.centerGoal2D = new Vector(location.getX(), 0, location.getZ());
-    }
-
     public Vector middleCubeCenter2D() {
         return this.middleCubeCenter2D.clone();
-    }
-
-    public Vector goalCenter2D() {
-        return this.centerGoal2D.clone();
     }
 
 }

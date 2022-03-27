@@ -57,7 +57,11 @@ public class GameManager extends Restorable<SquidGame> {
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
-        this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
+        if (jsonConfig.getJsonObject().entrySet().isEmpty()) {
+            this.gData = new GData(new GLightData(), new BackRoomsData());
+        } else {
+            this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
+        }
     }
 
     @Override
