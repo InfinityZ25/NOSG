@@ -1,4 +1,4 @@
-package me.lofro.game.games.greenlight.utils.tasks.timer;
+package me.lofro.game.games.greenlight.utils.timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,12 @@ public class GameTimer extends BukkitRunnable {
     }
 
     public void update(int seconds) {
+        this.seconds = seconds;
         this.bossBar.name(formatTime(this.seconds));
+    }
+
+    public int getTime() {
+        return seconds;
     }
 
     public void setPreStart(int time) {

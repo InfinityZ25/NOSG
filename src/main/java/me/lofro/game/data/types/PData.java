@@ -204,6 +204,10 @@ public class PData {
 
     }
 
+    public Role getRole(SquidParticipant squidParticipant) {
+        return (squidParticipant instanceof SquidPlayer) ? Role.PLAYER : Role.GUARD;
+    }
+
     public List<SquidPlayer> getPlayers() {
         return participants.values().stream().filter(p -> p instanceof SquidPlayer).map(p -> (SquidPlayer) p)
                 .collect(Collectors.toList());

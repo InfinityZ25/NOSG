@@ -1,5 +1,10 @@
 package me.lofro.game.games;
 
+import me.lofro.game.games.backrooms.BackRoomsManager;
+import me.lofro.game.games.backrooms.commands.BackRoomsCMD;
+import me.lofro.game.games.backrooms.types.BackRoomsData;
+import me.lofro.game.games.hideseek.HideSeekManager;
+import me.lofro.game.games.hideseek.commands.HideSeekCMD;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -11,7 +16,7 @@ import me.lofro.game.games.greenlight.GreenLightManager;
 import me.lofro.game.games.greenlight.commands.GreenLightCMD;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.global.interfaces.Restorable;
-import me.lofro.game.games.greenlight.utils.tasks.timer.GameTimer;
+import me.lofro.game.games.greenlight.utils.timer.GameTimer;
 
 /**
  * A class to manage all commands, objects, events, & listeners for each game in
@@ -22,34 +27,37 @@ public class GameManager extends Restorable<SquidGame> {
 
     private final @Getter SquidGame squidInstance;
 
-    private final @Getter
-    GameTimer timer;
+    private final @Getter GameTimer timer;
 
     private GData gData;
-    private GreenLightManager gLManager;
+
+    private final GreenLightManager greenLightManager;
+    private final HideSeekManager hideSeekManager;
+    private final BackRoomsManager backRoomsManager;
 
     public GameManager(final SquidGame squidInstance) {
         this.squidInstance = squidInstance;
         // restore data from dManager json files.
         this.restore(squidInstance.getDManager().gDataConfig());
-        // initialize the GreenLightManager.
-        this.gLManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
+        // initialize the games.
+        this.greenLightManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
+        this.hideSeekManager = new HideSeekManager(this);
+        this.backRoomsManager = new BackRoomsManager(this, Bukkit.getWorlds().get(0));
         // initialize the Timer.
         this.timer = new GameTimer();
         // Run the task
         this.timer.runTaskTimerAsynchronously(squidInstance, 20L, 20L);
-
+        // register game commands.
         squidInstance.registerCommands(squidInstance.getCommandManager(),
-                new GreenLightCMD(gLManager));
+                new GreenLightCMD(greenLightManager),
+                new HideSeekCMD(hideSeekManager),
+                new BackRoomsCMD(backRoomsManager)
+                );
     }
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
-        // TODO: Fix whatever the fuck this is.
-        this.gData = (SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class).gLightData() != null)
-                ? SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class)
-                : new GData(new GLightData(new Location(Bukkit.getWorlds().get(0), -20, -29, -35),
-                        new Location(Bukkit.getWorlds().get(0), -146, 3, 18)));
+        this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
     }
 
     @Override
@@ -68,5 +76,4 @@ public class GameManager extends Restorable<SquidGame> {
     public GData gData() {
         return this.gData;
     }
-
 }

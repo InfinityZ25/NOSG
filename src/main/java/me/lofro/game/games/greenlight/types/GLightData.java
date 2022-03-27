@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import lombok.Getter;
@@ -18,6 +19,13 @@ public class GLightData {
 
     @Getter @Setter Location cubeUpper, cubeLower;
     @Getter List<Location> cannonLocations;
+
+    public GLightData() {
+        final var baseWorld = Bukkit.getWorlds().get(0);
+        this.cubeLower = new Location(baseWorld, -20, 0, -35);
+        this.cubeUpper = new Location(baseWorld, -146, 15, 18);
+        this.cannonLocations = new ArrayList<>();
+    }
 
     public GLightData(Location cuberUpper, Location cubeLower, Location... cannonLocations) {
         this.cubeUpper = cuberUpper;

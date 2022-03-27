@@ -1,6 +1,7 @@
 package me.lofro.game.global.commands;
 
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import me.lofro.game.SquidGame;
 import me.lofro.game.global.utils.Strings;
@@ -11,6 +12,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import me.lofro.game.global.utils.extras.BukkitTimer;
 
 @CommandAlias("timer")
+@CommandPermission("admin.perm")
 public class TimerCMD extends BaseCommand {
 
     private BukkitTimer bukkitTimer;

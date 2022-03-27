@@ -3,17 +3,16 @@ package me.lofro.game.games.greenlight;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import me.lofro.game.games.GameManager;
 import me.lofro.game.games.greenlight.listeners.PreLightGameListener;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
+import me.lofro.game.global.utils.LineVector;
 import me.lofro.game.global.utils.Locations;
 import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.players.PlayerManager;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -33,7 +32,7 @@ public class GreenLightManager {
 
     private @Getter @Setter LightState lightState;
 
-    private @Getter boolean isRunning;
+    private @Getter boolean isRunning = false;
 
     private final @Getter PreLightGameListener preGameListener;
     private final @Getter GreenLightListener greenLightListener;
@@ -64,7 +63,7 @@ public class GreenLightManager {
 
         gManager.getSquidInstance().registerListener(preGameListener);
 
-        // TODO EXTRA FUNCTIONS.
+        Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), "sfx.green_red_light", 1, 1));
     }
 
     public void runGame(int seconds) {
@@ -116,18 +115,58 @@ public class GreenLightManager {
                 || playerManager().isDead(player))
             return;
         Sounds.playSoundDistance(cubeCenter, 150, "sfx.dramatic_gun_shots", 1f, 1f);
+        if (!cannonLocations().isEmpty()) shootCannon(player, 0.25);
         player.setHealth(0);
     }
 
     public void shootAll(boolean endGame) {
         ArrayList<Player> playerList = new ArrayList<>();
-        Bukkit.getOnlinePlayers().forEach(p -> {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (playerManager().isGuard(p)) continue;
             if (playerManager().isPlayer(p) && !playerManager().isDead(p)
-                    && Locations.isInCube(cubeLower().clone().add(21, 0, 0), cubeUpper(), p.getLocation())) {
+                    && Locations.isInCube(cubeLower(), cubeUpper(), p.getLocation())) {
                 playerList.add(p);
             }
-        });
+        }
         new PlayerArrayQueueShootTask(this, playerList, endGame, 0, 40);
+    }
+
+    public void setCubeCenter2D(Location location) {
+        this.cubeCenter = location;
+        cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
+    }
+
+    double taxiDistance(Location a, Location b) {
+        return (Math.abs(a.getX() - b.getX()) + Math.abs(a.getZ() - b.getZ()));
+    }
+
+    private Location closestCannon(Location loc) {
+        var cannonIter = gManager.gData().greenLightData().getCannonLocations().iterator();
+        var greatestDistance = Double.MAX_VALUE;
+        Location closestCannon = null;
+
+        while (cannonIter.hasNext()) {
+            var next = cannonIter.next();
+            var d = taxiDistance(next, loc);
+            if (d < greatestDistance) {
+                greatestDistance = d;
+                closestCannon = next;
+            }
+        }
+        return closestCannon;
+    }
+
+    private void shootCannon(Player player, double t) {
+        var cannon = closestCannon(player.getLocation());
+        var points = LineVector.of(cannon.toVector(), player.getLocation().add(0, 1.5, 0).toVector()).getPointsInBetween(t);
+
+        points.forEach(p -> new ParticleBuilder(Particle.REDSTONE)
+                .color(Color.RED)
+                .location(p.toLocation(world))
+                .force(true)
+                .count(15)
+                .offset(0.000001, 0.000001, 0.000001).extra(0).spawn());
+
     }
 
     public PlayerManager playerManager() {
@@ -136,11 +175,6 @@ public class GreenLightManager {
 
     public boolean inCube(Location location) {
         return Locations.isInCube(cubeLower(), cubeUpper(), location);
-    }
-
-    public void setCubeCenter2D(Location location) {
-        this.cubeCenter = location;
-        cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
     }
 
     public Vector getCubeCenter2D() {
@@ -160,7 +194,7 @@ public class GreenLightManager {
     }
 
     private GLightData gLightData() {
-        return this.gManager.gData().gLightData();
+        return this.gManager.gData().greenLightData();
     }
 
 }

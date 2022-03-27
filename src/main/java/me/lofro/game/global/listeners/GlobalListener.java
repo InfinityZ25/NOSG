@@ -1,17 +1,26 @@
 package me.lofro.game.global.listeners;
 
+import me.lofro.game.SquidGame;
+import me.lofro.game.players.enums.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
@@ -24,6 +33,10 @@ import me.lofro.game.global.utils.datacontainers.PlayerIsNotOnlineException;
 import me.lofro.game.players.PlayerManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class GlobalListener implements Listener {
 
@@ -74,7 +87,7 @@ public class GlobalListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncChatEvent e) {
-        Player player = e.getPlayer();
+        var player = e.getPlayer();
 
         e.setCancelled(true);
 
@@ -109,17 +122,60 @@ public class GlobalListener implements Listener {
         int playerID = squidPlayer.getId();
 
         player.setGameMode(GameMode.SPECTATOR);
-        if (squidPlayer.isDead())
-            return;
+        if (squidPlayer.isDead()) return;
 
         squidPlayer.setDead(true);
 
         Bukkit.getOnlinePlayers().forEach(online -> online.playSound(online.getLocation(), "sfx.elimination", 1, 1));
 
-        Bukkit.broadcast(
-                Component.text(Strings.format("&bEl jugador &3#" + playerID + " " + name + " &bha sido eliminado.")));
+        Bukkit.broadcast(Component.text(Strings.format("&bEl jugador &3#" + playerID + " " + name + " &bha sido eliminado.")));
 
-        // TODO CABEZA.
+        setSkullOnGround(player);
+    }
+
+    private void setSkullOnGround(Player player) {
+        var location = player.getLocation();
+
+        for (int y = location.getBlockY(); y > -64; y--) {
+
+            if(location.clone().subtract(0, 1, 0).getBlock().getType() == Material.AIR) continue;
+
+            Block skullBlock = location.getBlock();
+            skullBlock.setType(Material.PLAYER_HEAD);
+
+            BlockState state = skullBlock.getState();
+            Skull skull = (Skull) state;
+            UUID uuid = player.getUniqueId();
+
+            skull.setOwningPlayer(Bukkit.getServer().getOfflinePlayer(uuid));
+
+            Rotatable skullRotation = (Rotatable) skull.getBlockData();
+            skullRotation.setRotation(getCardinalDirectionFace(player.getLocation()).getOppositeFace());
+            skull.setBlockData(skullRotation);
+
+            skull.update();
+
+            break;
+        }
+    }
+
+    private BlockFace getCardinalDirectionFace(Location location) {
+        var yaw = location.getYaw();
+        double rotation = (yaw) % 360.0F;
+
+        if (rotation < 0.0D) rotation += 360.0D;
+
+        Bukkit.getLogger().info(String.valueOf(rotation));
+
+        int index = (int) (rotation / 45);
+
+        ArrayList<BlockFace> allFaces = new ArrayList<>(
+                Arrays.asList(BlockFace.SOUTH, BlockFace.SOUTH_WEST,
+                        BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST));
+
+        Bukkit.getLogger().info(String.valueOf(allFaces.get(index)));
+
+        return allFaces.get(index);
     }
 
     @EventHandler
@@ -144,7 +200,7 @@ public class GlobalListener implements Listener {
 
     @EventHandler
     public void onFood(FoodLevelChangeEvent e) {
-        Player player = (Player) e.getEntity();
+        var player = (Player) e.getEntity();
         if (!player.hasPotionEffect(PotionEffectType.SATURATION) && !player.hasPotionEffect(PotionEffectType.HUNGER)) {
             e.setCancelled(true);
         }
@@ -155,12 +211,132 @@ public class GlobalListener implements Listener {
         var player = e.getPlayer();
 
         if (pManager.isPlayer(player)) {
-            if (e.getCause().equals(PlayerGameModeChangeEvent.Cause.COMMAND)
-                    || e.getCause().equals(PlayerGameModeChangeEvent.Cause.DEFAULT_GAMEMODE)) {
+            if (e.getCause().equals(PlayerGameModeChangeEvent.Cause.COMMAND) || e.getCause().equals(PlayerGameModeChangeEvent.Cause.DEFAULT_GAMEMODE)) {
                 e.setCancelled(true);
-                if (player.isOp())
-                    player.sendMessage(
-                            Strings.format("&cTu modo de juego no ha sido actualizado ya que tu rol es PLAYER."));
+                if (player.isOp()) player.sendMessage(Strings.format("&cTu modo de juego no ha sido actualizado ya que tu rol es PLAYER."));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        var entity = e.getEntity();
+        var damager = e.getDamager();
+
+        var pvPState = gManager.gData().getPvPState();
+
+        if (entity instanceof Player player) {
+            var name = player.getName();
+
+            var pSquidParticipant = pManager.pData().getParticipant(name);
+
+            var pRole = pManager.pData().getRole(pSquidParticipant);
+
+            if (damager instanceof Player playerDamager) {
+                var playerDamagerName = playerDamager.getName();
+
+                var dSquidParticipant = pManager.pData().getParticipant(playerDamagerName);
+
+                var dRole = pManager.pData().getRole(dSquidParticipant);
+
+                switch (pvPState) {
+                    case ONLY_GUARDS -> {
+                        //Player to player.
+                        if (pRole == Role.PLAYER && dRole == pRole) {
+                            e.setCancelled(true);
+                            break;
+                        }
+                        //Guard to guard.
+                        if (pRole == Role.GUARD && dRole == pRole) {
+                            e.setCancelled(true);
+                            break;
+                        }
+                        //Player to guard.
+                        if (dRole == Role.PLAYER && pRole == Role.GUARD) {
+                            e.setCancelled(true);
+                        }
+                    }
+                    case NONE -> e.setCancelled(true);
+                }
+            } else if (damager instanceof Projectile projectile) {
+                if (projectile.getShooter() instanceof Player pShooter) {
+                    String pShooterName = pShooter.getName();
+
+                    var pShooterSquidParticipant = pManager.pData().getParticipant(pShooterName);
+
+                    var pShooterRole = pManager.pData().getRole(pShooterSquidParticipant);
+
+                    switch (pvPState) {
+                        case ONLY_GUARDS -> {
+                            //Player to player.
+                            if (pRole == Role.PLAYER && pShooterRole == pRole) {
+                                e.setCancelled(true);
+                                break;
+                            }
+                            //Guard to guard.
+                            if (pRole == Role.GUARD && pShooterRole == pRole) {
+                                e.setCancelled(true);
+                                break;
+                            }
+                            //Player to guard.
+                            if (pShooterRole == Role.PLAYER && pRole == Role.GUARD) {
+                                e.setCancelled(true);
+                                break;
+                            }
+
+                            e.setDamage(1000);
+                        }
+                        case NONE -> e.setCancelled(true);
+                        default -> e.setDamage(1000);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClick(PlayerInteractEvent e) {
+        var player = e.getPlayer();
+        var name = player.getName();
+
+        var block = e.getClickedBlock();
+
+        var squidParticipant = pManager.pData().getParticipant(name);
+
+        var role = pManager.pData().getRole(squidParticipant);
+
+        if (role == Role.GUARD) {
+            if (e.getHand() == EquipmentSlot.HAND) {
+                if (block != null && block.getType().equals(Material.IRON_DOOR)) {
+                    // 1ms delay fixing visual bug.
+                    Bukkit.getScheduler().runTask(SquidGame.getInstance(), task -> openDoors(block));
+                }
+            }
+        }
+    }
+
+    /**
+     * Function that opens both door hinges at the same time.
+     *
+     * @param block Block to open.
+     */
+    private void openDoors(Block block) {
+        if (block.getBlockData() instanceof Door door) {
+            ArrayList<BlockFace> mainFaces = new ArrayList<>(Arrays.asList(BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH));
+
+            door.setOpen(!door.isOpen());
+            block.setBlockData(door);
+
+            var hinge = door.getHinge();
+            var index = mainFaces.indexOf(door.getFacing());
+            var face = mainFaces.get(hinge == Door.Hinge.RIGHT ? ( index == 0 ? 3 : index -1 ) : (index == 3 ? 0 : index + 1));
+
+            var relative = block.getRelative(face);
+            if (relative.getBlockData() instanceof Door secondDoor) {
+                if (secondDoor.isOpen() == door.isOpen()) return;
+                if (hinge == secondDoor.getHinge()) return;
+                secondDoor.setOpen(!secondDoor.isOpen());
+                relative.setBlockData(secondDoor);
             }
         }
     }

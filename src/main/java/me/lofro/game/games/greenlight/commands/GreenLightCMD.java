@@ -1,5 +1,6 @@
 package me.lofro.game.games.greenlight.commands;
 
+import co.aikar.commands.annotation.*;
 import com.google.common.collect.ImmutableList;
 import me.lofro.game.SquidGame;
 import me.lofro.game.global.utils.Strings;
@@ -7,12 +8,11 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.Subcommand;
 import me.lofro.game.games.greenlight.GreenLightManager;
+import org.bukkit.entity.Player;
 
 @CommandAlias("greenLight")
+@CommandPermission("admin.perm")
 public class GreenLightCMD extends BaseCommand {
 
     private final GreenLightManager gLightManager;
@@ -52,6 +52,12 @@ public class GreenLightCMD extends BaseCommand {
         }
     }
 
+    @Subcommand("shoot")
+    @CommandCompletion("@players")
+    public void shoot(CommandSender sender, @Flags("other") Player player) {
+        gLightManager.shoot(player);
+    }
+
     @Subcommand("preStart")
     public void preStart(CommandSender sender) {
         if (gLightManager.isRunning()) {
@@ -68,7 +74,7 @@ public class GreenLightCMD extends BaseCommand {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
         } else {
-            var gLightData = gLightManager.getGManager().gData().gLightData();
+            var gLightData = gLightManager.getGManager().gData().greenLightData();
 
             gLightData.setCubeLower(cubeLower);
             gLightData.setCubeUpper(cubeUpper);
@@ -82,10 +88,24 @@ public class GreenLightCMD extends BaseCommand {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar los cañones mientras el juego está siendo ejecutado."));
         } else {
-            var gLightData = gLightManager.getGManager().gData().gLightData();
+            var gLightData = gLightManager.getGManager().gData().greenLightData();
 
             gLightData.getCannonLocations().add(cannon);
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cañón ha sido añadido correctamente."));
         }
     }
+
+    @Subcommand("removeCannon")
+    @CommandCompletion("@location")
+    public void removeCannon(CommandSender sender, Location cannon) {
+        if (gLightManager.isRunning()) {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar los cañones mientras el juego está siendo ejecutado."));
+        } else {
+            var gLightData = gLightManager.getGManager().gData().greenLightData();
+
+            gLightData.getCannonLocations().remove(cannon);
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cañón ha sido eliminado correctamente."));
+        }
+    }
+
 }
