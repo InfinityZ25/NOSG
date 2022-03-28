@@ -7,7 +7,9 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import me.lofro.game.SquidGame;
 import me.lofro.game.games.backrooms.BackRoomsManager;
+import me.lofro.game.games.backrooms.enums.BackRoomsState;
 import me.lofro.game.global.utils.Strings;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("backrooms")
@@ -51,6 +53,46 @@ public class BackRoomsCMD extends BaseCommand {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido preparado con éxito."));
         } else {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego ya está siendo ejecutado."));
+        }
+    }
+
+    @Subcommand("stopPreGame")
+    public void stopPreGame(CommandSender sender) {
+        if (bRManager.getBackRoomsState() == BackRoomsState.PRE_START) {
+            bRManager.stopPreGame();
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bLa fase de Pre-Game ha sido desactivada con éxito."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego no está siendo ejecutado en Pre-Game."));
+        }
+    }
+
+    @Subcommand("setCube")
+    @CommandCompletion("@location @location")
+    public void setCube(CommandSender sender, Location cubeLower, Location cubeUpper) {
+        if (!bRManager.isRunning()) {
+            var backRoomsData = bRManager.backRoomsData();
+
+            backRoomsData.setCubeLower(cubeLower);
+            backRoomsData.setCubeUpper(cubeUpper);
+
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cubo de juego ha sido actualizado correctamente."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
+        }
+    }
+
+    @Subcommand("setMiddleCube")
+    @CommandCompletion("@location @location")
+    public void setMiddleCube(CommandSender sender, Location cubeLower, Location cubeUpper) {
+        if (!bRManager.isRunning()) {
+            var backRoomsData = bRManager.backRoomsData();
+
+            backRoomsData.setMiddleCubeLower(cubeLower);
+            backRoomsData.setMiddleCubeUpper(cubeUpper);
+
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cubo de juego ha sido actualizado correctamente."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
         }
     }
 

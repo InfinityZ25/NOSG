@@ -66,6 +66,12 @@ public class GreenLightManager {
         Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), "sfx.green_red_light", 1, 1));
     }
 
+    public void stopPreStart() {
+        this.lightState = null;
+
+        gManager.getSquidInstance().unregisterListener(preGameListener);
+    }
+
     public void runGame(int seconds) {
         if (this.isRunning)
             throw new IllegalStateException(

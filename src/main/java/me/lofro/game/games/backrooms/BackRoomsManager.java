@@ -68,9 +68,15 @@ public class BackRoomsManager {
         gManager.getSquidInstance().registerListener(preBackRoomsListener);
     }
 
-    public void runGame(int safeSeconds, int playerLimit) {
+    public void stopPreGame() {
+        this.backRoomsState = null;
+
+        gManager.getSquidInstance().unregisterListener(preBackRoomsListener);
+    }
+
+    public void runGame(int safeSeconds, int winnerLimit) {
         this.safeSeconds = safeSeconds;
-        this.winnerLimit = playerLimit;
+        this.winnerLimit = winnerLimit;
         this.isRunning = true;
 
         gManager.getSquidInstance().unregisterListener(preBackRoomsListener);

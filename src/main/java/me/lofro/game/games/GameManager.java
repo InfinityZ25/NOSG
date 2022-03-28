@@ -1,5 +1,6 @@
 package me.lofro.game.games;
 
+import com.google.common.collect.ImmutableList;
 import me.lofro.game.games.backrooms.BackRoomsManager;
 import me.lofro.game.games.backrooms.commands.BackRoomsCMD;
 import me.lofro.game.games.backrooms.types.BackRoomsData;
@@ -53,6 +54,9 @@ public class GameManager extends Restorable<SquidGame> {
                 new HideSeekCMD(hideSeekManager),
                 new BackRoomsCMD(backRoomsManager)
                 );
+
+        SquidGame.getInstance().getCommandManager().getCommandCompletions().registerCompletion(
+                "@location", c -> ImmutableList.of("x,y,z"));
     }
 
     @Override

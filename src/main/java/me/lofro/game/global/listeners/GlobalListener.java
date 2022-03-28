@@ -56,10 +56,12 @@ public class GlobalListener implements Listener {
         e.joinMessage(null);
 
         pManager.guardMessage(Component.text(Strings.format("&7El jugador &6" + name + " &7ha entrado al servidor.")));
+        player.playSound(player.getLocation(), "sfx.server_join", 1, 1);
 
         if (pManager.pData().getParticipant(name) == null) {
             if (player.isOp()) {
                 pManager.pData().addGuard(name);
+                player.sendMessage(Strings.format(SquidGame.prefix + "&bTu rol ha sido asignado automáticamente a &3GUARDIA&b debido a que tienes permisos de administrador."));
             } else {
                 pManager.pData().addPlayer(name);
                 player.setGameMode(GameMode.ADVENTURE);
@@ -165,15 +167,11 @@ public class GlobalListener implements Listener {
 
         if (rotation < 0.0D) rotation += 360.0D;
 
-        Bukkit.getLogger().info(String.valueOf(rotation));
-
         int index = (int) (rotation / 45);
 
         ArrayList<BlockFace> allFaces = new ArrayList<>(
                 Arrays.asList(BlockFace.SOUTH, BlockFace.SOUTH_WEST,
                         BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST));
-
-        Bukkit.getLogger().info(String.valueOf(allFaces.get(index)));
 
         return allFaces.get(index);
     }

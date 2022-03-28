@@ -13,12 +13,14 @@ public record PreBackRoomsListener(BackRoomsManager bRManager) implements Listen
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        if (!e.hasChangedBlock()) return;
+
         var player = e.getPlayer();
 
         if (bRManager.getBackRoomsState() == BackRoomsState.PRE_START) {
             if (player.getGameMode().equals(GameMode.SPECTATOR)) return;
 
-            if (bRManager.playerManager().isPlayer(player) && !bRManager.isMiddleCube(player.getLocation())) {
+            if (bRManager.playerManager().isPlayer(player) && bRManager.inCube(player.getLocation()) && !bRManager.isMiddleCube(player.getLocation())) {
                 //Mover hacia atrás.
                 Vector directorVec = bRManager.middleCubeCenter2D().subtract(player.getLocation().toVector());
 

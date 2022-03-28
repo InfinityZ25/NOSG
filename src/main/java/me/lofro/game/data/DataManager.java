@@ -5,6 +5,7 @@ import me.lofro.game.data.enums.SquidDataType;
 import me.lofro.game.data.utils.JsonConfig;
 import me.lofro.game.data.commands.DataCMD;
 import me.lofro.game.global.interfaces.Instantiable;
+import org.bukkit.Bukkit;
 
 /**
  * A class to manage, backup, & restore, the state of the application.
@@ -46,6 +47,10 @@ public class DataManager extends Instantiable<SquidGame> {
             case GAME_DATA -> ins().getGManager().save(gDataConfig);
             case PLAYER_DATA -> ins().getPManager().save(pDataConfig);
         }
+    }
+
+    public void printState() {
+        Bukkit.getLogger().info(SquidGame.gson().toJson( instance.getGManager().gData()));
     }
 
     /**

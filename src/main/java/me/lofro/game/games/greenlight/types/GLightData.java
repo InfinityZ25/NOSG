@@ -22,7 +22,7 @@ public class GLightData {
 
     public GLightData() {
         final var baseWorld = Bukkit.getWorlds().get(0);
-        this.cubeLower = new Location(baseWorld, -20, 0, -35);
+        this.cubeLower = new Location(baseWorld, -20, -29, -35);
         this.cubeUpper = new Location(baseWorld, -146, 15, 18);
         this.cannonLocations = new ArrayList<>();
     }

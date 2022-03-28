@@ -1,8 +1,8 @@
 package me.lofro.game.games.greenlight.commands;
 
 import co.aikar.commands.annotation.*;
-import com.google.common.collect.ImmutableList;
 import me.lofro.game.SquidGame;
+import me.lofro.game.games.greenlight.enums.LightState;
 import me.lofro.game.global.utils.Strings;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -19,9 +19,6 @@ public class GreenLightCMD extends BaseCommand {
 
     public GreenLightCMD(GreenLightManager gLightManager) {
         this.gLightManager = gLightManager;
-
-        SquidGame.getInstance().getCommandManager().getCommandCompletions().registerCompletion(
-                "@location", c -> ImmutableList.of("x,y,z"));
     }
 
     @Subcommand("run")
@@ -58,13 +55,23 @@ public class GreenLightCMD extends BaseCommand {
         gLightManager.shoot(player);
     }
 
-    @Subcommand("preStart")
-    public void preStart(CommandSender sender) {
+    @Subcommand("preGame")
+    public void preGame(CommandSender sender) {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego ya está siendo ejecutado."));
         } else {
             gLightManager.preStart();
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido preparado con éxito."));
+        }
+    }
+
+    @Subcommand("stopPreGame")
+    public void stopPreGame(CommandSender sender) {
+        if (gLightManager.getLightState() == LightState.PRE_START) {
+            gLightManager.stopPreStart();
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bLa fase de Pre-Game ha sido desactivada con éxito."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego no está siendo ejecutado en Pre-Game."));
         }
     }
 

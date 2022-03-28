@@ -33,6 +33,8 @@ public class BackRoomsListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        if (!e.hasChangedBlock()) return;
+
         var player = e.getPlayer();
 
         if (!bRManager.playerManager().isPlayer(player)) return;
@@ -43,32 +45,38 @@ public class BackRoomsListener implements Listener {
 
             var squidPlayer = bRManager.playerManager().pData().getPlayer(name);
 
-            var winners = bRManager.getWinners();
+            var winnerList = bRManager.getWinners();
+            var winnerLimit = bRManager.getWinnerLimit();
 
-            if (winners.size() + 1 <= bRManager.getWinnerLimit()) {
-                if (winners.containsKey(name)) return;
+            if (winnerList.size() < winnerLimit) {
+                if (winnerList.containsKey(name)) return;
 
-                if (winners.size() + 1 == bRManager.getWinnerLimit()) {
+                winnerList.put(name, squidPlayer);
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+
+                int winners = winnerList.size();
+
+                if (winners == winnerLimit) {
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         if (p.getGameMode().equals(GameMode.SPECTATOR) || p.getGameMode().equals(GameMode.CREATIVE)) return;
-                        if (bRManager.inCube(p.getLocation()) && !bRManager.playerManager().isDead(p) && !winners.containsKey(name)) {
-                            losers.put(name, p);
+                        if (bRManager.inCube(p.getLocation())) {
+                            losers.put(p.getName(), p);
                         }
                     });
                     Bukkit.getScheduler().runTaskLater(bRManager.gameManager().getSquidInstance(), bRManager::killLosers, 5 * 10);
 
                     if (losers.isEmpty()) bRManager.endGame();
+
+                    Bukkit.broadcast(Component.text(Strings.format("&bEl jugador &3#" + squidPlayer.getId() + " " + name + " &bha encontrado la salida.")));
+                    Bukkit.broadcast(Component.text(Strings.format("&cNo quedan plazas restantes.")));
+
+                    return;
                 }
 
-                winners.put(name, squidPlayer);
-                player.removePotionEffect(PotionEffectType.BLINDNESS);
-
-                Bukkit.broadcast(Component.text(
-                        Strings.format(
-                                "&bEl jugador &3#" + squidPlayer.getId() + " " + name + " &bha encontrado la salida. Quedan &3"
-                                + (bRManager.getWinnerLimit() - winners.size()) + "&b plazas.")));
+                Bukkit.broadcast(Component.text(Strings.format("&bEl jugador &3#" + squidPlayer.getId() + " " + name + " &bha encontrado la salida.")));
+                Bukkit.broadcast(Component.text(Strings.format("&eQuedan &6" + (bRManager.getWinnerLimit() - winners) + "&e plazas restantes.")));
             } else {
-                if (winners.containsKey(name)) return;
+                if (winnerList.containsKey(name)) return;
 
                 Vector opposite = bRManager.cubeCenter2D().subtract(player.getLocation().toVector());
 
@@ -82,9 +90,8 @@ public class BackRoomsListener implements Listener {
         var player = e.getPlayer();
         var name = player.getName();
 
-        if (losers.size() > 0) {
-            losers.remove(name);
-        } else {
+        losers.remove(name);
+        if (losers.isEmpty()) {
             bRManager.endGame();
         }
     }

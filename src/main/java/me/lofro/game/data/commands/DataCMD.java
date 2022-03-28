@@ -25,4 +25,9 @@ public class DataCMD extends BaseCommand {
         dManager.save(squidDataType);
         sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl data config de &3" + squidDataType.name() + " &bha sido guardado con éxito."));
     }
+
+    @Subcommand("gState")
+    public void gstate(CommandSender sender) {
+        dManager.printState();
+    }
 }

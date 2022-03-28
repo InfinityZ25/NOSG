@@ -13,6 +13,7 @@ public record PreLightGameListener(GreenLightManager gLightManager) implements L
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        if (!e.hasChangedBlock()) return;
         if (!gLightManager.getLightState().equals(LightState.PRE_START)) return;
 
         var player = e.getPlayer();
