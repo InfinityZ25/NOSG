@@ -3,6 +3,9 @@ package me.lofro.game.global.utils;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Locations {
 
     /**
@@ -46,6 +49,28 @@ public class Locations {
         int z = ((pos2.getBlockZ() + pos1.getBlockZ()) / 2);
 
         return new Location(world, x, y, z);
+    }
+
+    public static List<Location> getBlocksInsideCube(Location loc1, Location loc2) {
+        List<Location> locations = new ArrayList<>();
+
+        var xa = (int) (Math.max(loc1.getX(), loc2.getX()));
+        var ya = (int) (Math.max(loc1.getY(), loc2.getY()));
+        var za = (int) (Math.max(loc1.getZ(), loc2.getZ()));
+
+        var xi = (int) (Math.min(loc1.getX(), loc2.getX()));
+        var yi = (int) (Math.min(loc1.getY(), loc2.getY()));
+        var zi = (int) (Math.min(loc1.getZ(), loc2.getZ()));
+
+        for (int x = xi; x <= xa; x++) {
+            for (int y = yi; y <= ya; y++) {
+                for (int z = zi; z <= za; z++) {
+                    locations.add(new Location(loc1.getWorld(), x, y, z));
+                }
+            }
+        }
+
+        return locations;
     }
 
 }

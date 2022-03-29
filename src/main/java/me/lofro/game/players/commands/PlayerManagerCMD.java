@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Subcommand;
 import me.lofro.game.SquidGame;
 import me.lofro.game.global.utils.Strings;
 import me.lofro.game.players.PlayerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -72,6 +73,23 @@ public class PlayerManagerCMD extends BaseCommand {
         } else {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl jugador " + name + " no esta muerto."));
         }
+    }
+
+    @Subcommand("reviveAll")
+    public void reviveAll(CommandSender sender) {
+        var pData = pManager.pData();
+
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (!pManager.isPlayer(p)) return;
+
+            var squidPlayer = pManager.pData().getPlayer(p.getName());
+
+            if (squidPlayer.isDead()) {
+                squidPlayer.setDead(false);
+                p.setGameMode(GameMode.ADVENTURE);
+            }
+
+        });
     }
 
 }

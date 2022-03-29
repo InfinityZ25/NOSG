@@ -81,12 +81,13 @@ public class GreenLightManager {
 
         gManager.getTimer().start(seconds);
 
+        gManager.getSquidInstance().unregisterListener(preGameListener);
+
         greenLightGame.setTaskID(greenLightGame.runTaskTimer(gManager.getSquidInstance(), 0, 20).getTaskId());
 
         greenLightGame.greenLight(true);
 
-        greenLightGame.setEndTaskID(Bukkit.getScheduler()
-                .runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
+        greenLightGame.setEndTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
     }
 
     public void endGame() {
@@ -137,11 +138,6 @@ public class GreenLightManager {
         new PlayerArrayQueueShootTask(this, playerList, endGame, 0, 40);
     }
 
-    public void setCubeCenter2D(Location location) {
-        this.cubeCenter = location;
-        cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
-    }
-
     double taxiDistance(Location a, Location b) {
         return (Math.abs(a.getX() - b.getX()) + Math.abs(a.getZ() - b.getZ()));
     }
@@ -164,15 +160,21 @@ public class GreenLightManager {
 
     private void shootCannon(Player player, double t) {
         var cannon = closestCannon(player.getLocation());
-        var points = LineVector.of(cannon.toVector(), player.getLocation().add(0, 1.5, 0).toVector()).getPointsInBetween(t);
+        var points = LineVector.of(player.getLocation().add(0, player.getEyeHeight(), 0).toVector(),cannon.clone().add(0.5, 0.5, 0.5).toVector()).getPointsInBetween(t);
 
         points.forEach(p -> new ParticleBuilder(Particle.REDSTONE)
                 .color(Color.RED)
                 .location(p.toLocation(world))
                 .force(true)
                 .count(15)
-                .offset(0.000001, 0.000001, 0.000001).extra(0).spawn());
+                .offset(0.000001, 0.000001, 0.000001)
+                .extra(0)
+                .spawn());
+    }
 
+    public void setCubeCenter2D(Location location) {
+        this.cubeCenter = location;
+        cubeCenter2D = new Vector(location.getX(), 0, location.getZ());
     }
 
     public PlayerManager playerManager() {

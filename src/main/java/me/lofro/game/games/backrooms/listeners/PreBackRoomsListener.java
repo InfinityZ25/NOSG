@@ -13,8 +13,7 @@ public record PreBackRoomsListener(BackRoomsManager bRManager) implements Listen
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (!e.hasChangedBlock()) return;
-
+        if (!e.hasChangedPosition()) return;
         var player = e.getPlayer();
 
         if (bRManager.getBackRoomsState() == BackRoomsState.PRE_START) {

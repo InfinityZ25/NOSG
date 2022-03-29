@@ -70,8 +70,6 @@ tasks {
     shadowJar {
         relocate("co.aikar.commands", "shadded.acf")
         relocate("co.aikar.locales", "shadded.acf.locales")
-        relocate("acf-minecraft_", "shadded.acf.properties.acf-minecraft_")
-        relocate("acf-core_", "shadded.acf.properties.acf-core_")
     }
 }
 

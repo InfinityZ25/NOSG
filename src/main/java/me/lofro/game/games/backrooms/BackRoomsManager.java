@@ -75,6 +75,10 @@ public class BackRoomsManager {
     }
 
     public void runGame(int safeSeconds, int winnerLimit) {
+        if (this.isRunning)
+            throw new IllegalStateException(
+                    "The game " + this.getClass().getSimpleName() + " is already running.");
+
         this.safeSeconds = safeSeconds;
         this.winnerLimit = winnerLimit;
         this.isRunning = true;
@@ -111,6 +115,9 @@ public class BackRoomsManager {
         gManager.getTimer().end();
 
         this.winners.clear();
+        backRoomsListener.getLosers().clear();
+
+        Bukkit.getOnlinePlayers().forEach(p -> p.removePotionEffect(PotionEffectType.BLINDNESS));
 
         gManager.getSquidInstance().unregisterListener(backRoomsListener);
     }

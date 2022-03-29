@@ -3,7 +3,6 @@ package me.lofro.game;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import me.lofro.game.global.commands.PvPCMD;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
@@ -76,8 +75,7 @@ public class SquidGame extends JavaPlugin {
         );
 
         registerCommands(commandManager,
-                new TimerCMD(),
-                new PvPCMD(gManager)
+                new TimerCMD()
         );
 
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido iniciado correctamente."));

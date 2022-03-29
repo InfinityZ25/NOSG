@@ -29,6 +29,10 @@ public class HideSeekManager {
     }
 
     public void runGame(int hideTime, int seekTime) {
+        if (this.isRunning)
+            throw new IllegalStateException(
+                    "The game " + this.getClass().getSimpleName() + " is already running.");
+
         changeMode(HideGameState.HIDE, hideTime);
 
         this.isRunning = true;

@@ -27,6 +27,8 @@ public class BackRoomsListener implements Listener {
 
     private @Getter final HashMap<String, Player> losers = new HashMap<>();
 
+    boolean limit = false;
+
     public BackRoomsListener(BackRoomsManager bRManager) {
         this.bRManager = bRManager;
     }
@@ -59,10 +61,11 @@ public class BackRoomsListener implements Listener {
                 if (winners == winnerLimit) {
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         if (p.getGameMode().equals(GameMode.SPECTATOR) || p.getGameMode().equals(GameMode.CREATIVE)) return;
-                        if (bRManager.inCube(p.getLocation())) {
+                        if (bRManager.playerManager().isPlayer(p) && !winnerList.containsKey(p.getName()) && bRManager.inCube(p.getLocation())) {
                             losers.put(p.getName(), p);
                         }
                     });
+                    this.limit = true;
                     Bukkit.getScheduler().runTaskLater(bRManager.gameManager().getSquidInstance(), bRManager::killLosers, 5 * 10);
 
                     if (losers.isEmpty()) bRManager.endGame();
@@ -89,6 +92,8 @@ public class BackRoomsListener implements Listener {
     public void onDeath(PlayerDeathEvent e) {
         var player = e.getPlayer();
         var name = player.getName();
+
+        if (!limit) return;
 
         losers.remove(name);
         if (losers.isEmpty()) {

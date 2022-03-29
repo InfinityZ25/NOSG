@@ -1,6 +1,9 @@
 package me.lofro.game.global.listeners;
 
+import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import me.lofro.game.SquidGame;
+import me.lofro.game.global.item.CustomItems;
+import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.players.enums.Role;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -16,9 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -81,13 +82,14 @@ public class GlobalListener implements Listener {
         e.quitMessage(null);
 
         pManager.guardMessage(
-                Component.text(Strings.format("&7El jugador &8" + name + " &7ha abandonado el servidor.")));
+                Component.text(Strings.format("&7El jugador &6" + name + " &7ha abandonado el servidor.")));
 
         var timer = gManager.getTimer();
         timer.removePlayer(player);
     }
 
-    @EventHandler
+    //TODO PONER EN EVENTO
+    /*@EventHandler
     public void onChat(AsyncChatEvent e) {
         var player = e.getPlayer();
 
@@ -96,7 +98,8 @@ public class GlobalListener implements Listener {
         if (pManager.isGuard(player))
             pManager.guardMessage(Strings.componentFormat("&cGUARDS &8| &7" + player.getName() + " &8| &8&l>> &7"
                     + PlainTextComponentSerializer.plainText().serialize(e.message())));
-    }
+
+    }*/
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
@@ -309,6 +312,61 @@ public class GlobalListener implements Listener {
                     // 1ms delay fixing visual bug.
                     Bukkit.getScheduler().runTask(SquidGame.getInstance(), task -> openDoors(block));
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onArrowPickup(PlayerPickupArrowEvent e) {
+        var player = e.getPlayer();
+
+        if (pManager.isPlayer(player)) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCrossbowLoad(EntityLoadCrossbowEvent e) {
+        if (e.getCrossbow() == null) return;
+
+        var crossBow = e.getCrossbow();
+        var loc = e.getEntity().getLocation();
+
+        var itemMeta = crossBow.getItemMeta();
+
+        if (!itemMeta.hasCustomModelData()) return;
+
+        var modelData = itemMeta.getCustomModelData();
+
+        if (modelData == CustomItems.Weapons.REVOLVER.get().getItemMeta().getCustomModelData() || modelData == CustomItems.Weapons.SHOTGUN.get().getItemMeta().getCustomModelData()) {
+            e.setConsumeItem(false);
+            Sounds.playSoundDistance(loc, 20, "sfx.reload_gun", 1f, 1f);
+        }
+    }
+
+    @EventHandler
+    public void onProjectileLaunch(EntityShootBowEvent e) {
+        var entity = e.getEntity();
+
+        if (entity instanceof Player player) {
+
+            var loc = player.getLocation();
+
+            if (e.getBow() == null) return;
+
+            var bow = e.getBow();
+            var bMeta = bow.getItemMeta();
+
+            if (!bMeta.hasCustomModelData()) return;
+
+            var modelData = bMeta.getCustomModelData();
+
+            if (modelData == CustomItems.Weapons.REVOLVER.get().getItemMeta().getCustomModelData()) {
+                e.setConsumeItem(false);
+                Sounds.playSoundDistance(loc, 20, "sfx.gun", 1f, 1f);
+            } else if (modelData == CustomItems.Weapons.SHOTGUN.get().getItemMeta().getCustomModelData()) {
+                e.setConsumeItem(false);
+                Sounds.playSoundDistance(loc, 20, "sfx.shotgun", 1f, 1f);
             }
         }
     }

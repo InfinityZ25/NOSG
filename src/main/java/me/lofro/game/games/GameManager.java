@@ -4,6 +4,10 @@ import com.google.common.collect.ImmutableList;
 import me.lofro.game.games.backrooms.BackRoomsManager;
 import me.lofro.game.games.backrooms.commands.BackRoomsCMD;
 import me.lofro.game.games.backrooms.types.BackRoomsData;
+import me.lofro.game.games.commands.GameManagerCMD;
+import me.lofro.game.games.glass.GlassGameManager;
+import me.lofro.game.games.glass.commands.GlassGameCMD;
+import me.lofro.game.games.glass.types.GlassGameData;
 import me.lofro.game.games.hideseek.HideSeekManager;
 import me.lofro.game.games.hideseek.commands.HideSeekCMD;
 import org.bukkit.Bukkit;
@@ -35,6 +39,7 @@ public class GameManager extends Restorable<SquidGame> {
     private final GreenLightManager greenLightManager;
     private final HideSeekManager hideSeekManager;
     private final BackRoomsManager backRoomsManager;
+    private final GlassGameManager glassGameManager;
 
     public GameManager(final SquidGame squidInstance) {
         this.squidInstance = squidInstance;
@@ -44,15 +49,18 @@ public class GameManager extends Restorable<SquidGame> {
         this.greenLightManager = new GreenLightManager(this, Bukkit.getWorlds().get(0));
         this.hideSeekManager = new HideSeekManager(this);
         this.backRoomsManager = new BackRoomsManager(this, Bukkit.getWorlds().get(0));
+        this.glassGameManager = new GlassGameManager(this, Bukkit.getWorlds().get(0));
         // initialize the Timer.
         this.timer = new GameTimer();
         // Run the task
         this.timer.runTaskTimerAsynchronously(squidInstance, 20L, 20L);
         // register game commands.
         squidInstance.registerCommands(squidInstance.getCommandManager(),
+                new GameManagerCMD(this),
                 new GreenLightCMD(greenLightManager),
                 new HideSeekCMD(hideSeekManager),
-                new BackRoomsCMD(backRoomsManager)
+                new BackRoomsCMD(backRoomsManager),
+                new GlassGameCMD(glassGameManager)
                 );
 
         SquidGame.getInstance().getCommandManager().getCommandCompletions().registerCompletion(
@@ -62,7 +70,7 @@ public class GameManager extends Restorable<SquidGame> {
     @Override
     protected void restore(JsonConfig jsonConfig) {
         if (jsonConfig.getJsonObject().entrySet().isEmpty()) {
-            this.gData = new GData(new GLightData(), new BackRoomsData());
+            this.gData = new GData(new GLightData(), new BackRoomsData(), new GlassGameData());
         } else {
             this.gData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), GData.class);
         }

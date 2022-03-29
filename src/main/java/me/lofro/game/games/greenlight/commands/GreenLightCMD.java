@@ -52,7 +52,7 @@ public class GreenLightCMD extends BaseCommand {
     @Subcommand("shoot")
     @CommandCompletion("@players")
     public void shoot(CommandSender sender, @Flags("other") Player player) {
-        gLightManager.shoot(player);
+        if (!gLightManager.cannonLocations().isEmpty()) gLightManager.shoot(player);
     }
 
     @Subcommand("preGame")
