@@ -4,7 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.destroystokyo.paper.ParticleBuilder;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
+
+import lombok.Getter;
+import lombok.Setter;
+import me.lofro.game.SquidGame;
 import me.lofro.game.games.GameManager;
+import me.lofro.game.games.greenlight.enums.LightState;
+import me.lofro.game.games.greenlight.listeners.GreenLightListener;
 import me.lofro.game.games.greenlight.listeners.PreLightGameListener;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
@@ -13,18 +33,6 @@ import me.lofro.game.global.utils.LineVector;
 import me.lofro.game.global.utils.Locations;
 import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.players.PlayerManager;
-import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
-
-import lombok.Getter;
-import lombok.Setter;
-import me.lofro.game.games.greenlight.enums.LightState;
-import me.lofro.game.games.greenlight.listeners.GreenLightListener;
 
 public class GreenLightManager {
 
@@ -96,7 +104,8 @@ public class GreenLightManager {
 
         greenLightGame.greenLight(true);
 
-        greenLightGame.setEndTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
+        greenLightGame.setEndTaskID(Bukkit.getScheduler()
+                .runTaskLater(gManager.getSquidInstance(), this::endGame, seconds * 20L).getTaskId());
     }
 
     public void endGame() {
@@ -107,7 +116,8 @@ public class GreenLightManager {
         if (this.lightState.equals(LightState.GREEN_LIGHT))
             gManager.getSquidInstance().registerListener(greenLightListener);
 
-        greenLightGame.setShootAllTaskID(Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), () -> shootAll(true), 20 * 10).getTaskId());
+        greenLightGame.setShootAllTaskID(Bukkit.getScheduler()
+                .runTaskLater(gManager.getSquidInstance(), () -> shootAll(true), 20 * 10).getTaskId());
 
         this.greenLightGame = new GreenLightGame(this);
     }
@@ -131,14 +141,16 @@ public class GreenLightManager {
                 || playerManager().isDead(player))
             return;
         Sounds.playSoundDistance(cubeCenter, 150, "sfx.dramatic_gun_shots", 1f, 1f);
-        if (!cannonLocations().isEmpty()) shootCannon(player, 0.25);
+        if (!cannonLocations().isEmpty())
+            shootCannon(player, 0.25);
         player.setHealth(0);
     }
 
     public void shootAll(boolean endGame) {
         ArrayList<Player> playerList = new ArrayList<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (playerManager().isGuard(p)) continue;
+            if (playerManager().isGuard(p))
+                continue;
             if (playerManager().isPlayer(p) && !playerManager().isDead(p)
                     && Locations.isInCube(cubeLower(), cubeUpper(), p.getLocation())) {
                 playerList.add(p);
@@ -154,6 +166,41 @@ public class GreenLightManager {
         armorStand.setInvulnerable(true);
         armorStand.addDisabledSlots(EquipmentSlot.HEAD);
         armorStand.getEquipment().setHelmet(CustomItems.Decoration.KORO_SENSEI.get());
+    }
+
+    public void rotateStand(double degrees, boolean clockwise) {
+        var headPose = armorStand.getHeadPose();
+
+        var deg = Math.toDegrees(headPose.getY());
+
+        if (clockwise) {
+            deg += degrees;
+        } else {
+            deg -= degrees;
+        }
+
+        armorStand.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(deg), headPose.getZ()));
+    }
+
+    public void rotateProgressively(double degress, boolean clockwise, int ticks) {
+        // Rotate the armor stand degress/ticks until degrees is reached.
+        new BukkitRunnable() {
+            int i = 0;
+            double rotationParameter = (degress / (double) ticks);
+
+            @Override
+            public void run() {
+                if (i >= ticks) {
+                    this.cancel();
+                    return;
+                }
+
+                rotateStand(rotationParameter, clockwise);
+
+                i++;
+            }
+        }.runTaskTimer(SquidGame.getInstance(), 0, 1);
+
     }
 
     public void removeArmorStand() {
@@ -182,7 +229,8 @@ public class GreenLightManager {
 
     private void shootCannon(Player player, double t) {
         var cannon = closestCannon(player.getLocation());
-        var points = LineVector.of(player.getLocation().add(0, player.getEyeHeight(), 0).toVector(),cannon.clone().add(0.5, 0.5, 0.5).toVector()).getPointsInBetween(t);
+        var points = LineVector.of(player.getLocation().add(0, player.getEyeHeight(), 0).toVector(),
+                cannon.clone().add(0.5, 0.5, 0.5).toVector()).getPointsInBetween(t);
 
         points.forEach(p -> new ParticleBuilder(Particle.REDSTONE)
                 .color(Color.RED)
