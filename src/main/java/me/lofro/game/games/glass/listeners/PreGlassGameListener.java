@@ -13,7 +13,6 @@ public record PreGlassGameListener(GlassGameManager glassGManager) implements Li
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (!e.hasChangedPosition()) return;
         if (!glassGManager.getGlassGameState().equals(GlassGameState.PRE_START)) return;
 
         var player = e.getPlayer();

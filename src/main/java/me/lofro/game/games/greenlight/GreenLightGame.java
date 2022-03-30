@@ -79,7 +79,7 @@ public class GreenLightGame extends BukkitRunnable {
                 this.timeBetween = ThreadLocalRandom.current().nextInt(redLowestTimeBound, redHighestTimeBound);
                 gLightManager.setLightState(LightState.RED_LIGHT);
                 gManager.getSquidInstance().registerListener(gLightManager.getGreenLightListener());
-            }, 25);
+            }, 30);
         }
     }
 

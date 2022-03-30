@@ -15,8 +15,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class GlassGameManager {
 
@@ -31,6 +34,7 @@ public class GlassGameManager {
 
     private @Getter int gameSeconds;
     private int endTaskID;
+    private @Getter int maxDepth = 3;
 
     private @Getter boolean breakGlass = false;
 
@@ -50,12 +54,13 @@ public class GlassGameManager {
         this.preGlassGameListener = new PreGlassGameListener(this);
     }
 
-    public void runGame(int gameSeconds) {
+    public void runGame(int gameSeconds, int maxDepth) {
         if (this.isRunning)
             throw new IllegalStateException(
                     "The game " + this.getClass().getSimpleName() + " is already running.");
 
         this.gameSeconds = gameSeconds;
+        this.maxDepth = maxDepth;
         this.isRunning = true;
         this.glassGameState = GlassGameState.RUNNING;
 
@@ -84,6 +89,7 @@ public class GlassGameManager {
         this.isRunning = false;
         this.glassGameState = null;
 
+        gManager.getTimer().end();
         gManager.getSquidInstance().unregisterListener(glassGameListener);
     }
 
@@ -118,6 +124,22 @@ public class GlassGameManager {
             block.breakNaturally(new ItemStack(Material.AIR), true);
 
             if (playSound) Sounds.playSoundDistance(block.getLocation(), 100, "sfx.glass_break", 1f, 1f);
+        }
+    }
+
+    public void recursiveBreak(final Block b, final List<Block> blocks, final Boolean playSound, int depth, final int maxDepth) {
+        if (depth >= maxDepth) {
+            return;
+        }
+        if (playSound) Sounds.playSoundDistance(b.getLocation(), 100, "sfx.glass_break", 1f, 1f);
+        for (var f : BlockFace.values()) {
+            var block = b.getRelative(f);
+            if (block.getType() == Material.AIR || blocks.contains(block)) continue;
+            if (isGlass(block)) {
+                blocks.add(block);
+                block.breakNaturally(true);
+                recursiveBreak(block, blocks, false, (depth + 1), maxDepth);
+            }
         }
     }
 

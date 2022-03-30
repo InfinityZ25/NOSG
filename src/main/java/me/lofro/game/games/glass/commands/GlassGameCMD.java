@@ -10,7 +10,11 @@ import me.lofro.game.games.glass.GlassGameManager;
 import me.lofro.game.games.glass.enums.GlassGameState;
 import me.lofro.game.global.utils.Strings;
 import org.bukkit.Location;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 @CommandAlias("glassGame")
 @CommandPermission("admin.perm")
@@ -23,9 +27,10 @@ public class GlassGameCMD extends BaseCommand {
     }
 
     @Subcommand("start")
-    public void startGame(CommandSender sender, int time) {
+    @CommandCompletion("time maxDepth")
+    public void startGame(CommandSender sender, int time, int maxDepth) {
         if (!glassGManager.isRunning()) {
-            glassGManager.runGame(time);
+            glassGManager.runGame(time, maxDepth);
 
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido iniciado con éxito."));
         } else {
@@ -51,6 +56,14 @@ public class GlassGameCMD extends BaseCommand {
             glassGManager.preGame();
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido preparado con éxito."));
         }
+    }
+
+    @Subcommand("test")
+    public void test(CommandSender sender, Player player, int maxDepth) {
+        var block = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+        var startTime = System.nanoTime();
+        glassGManager.recursiveBreak(block, new ArrayList<>(), true, 0, maxDepth);
+        sender.sendMessage(String.valueOf(System.nanoTime() - startTime));
     }
 
     @Subcommand("stopPreGame")

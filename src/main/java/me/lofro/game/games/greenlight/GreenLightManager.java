@@ -8,12 +8,17 @@ import me.lofro.game.games.GameManager;
 import me.lofro.game.games.greenlight.listeners.PreLightGameListener;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
+import me.lofro.game.global.item.CustomItems;
 import me.lofro.game.global.utils.LineVector;
 import me.lofro.game.global.utils.Locations;
 import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.players.PlayerManager;
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import lombok.Getter;
@@ -45,6 +50,8 @@ public class GreenLightManager {
 
     private @Getter final World world;
 
+    private @Getter @Setter ArmorStand armorStand;
+
     public GreenLightManager(GameManager gManager, World world) {
         this.gManager = gManager;
 
@@ -56,6 +63,8 @@ public class GreenLightManager {
         setCubeCenter2D(cubeCenter);
 
         this.greenLightGame = new GreenLightGame(this);
+
+        spawnArmorStand();
     }
 
     public void preStart() {
@@ -136,6 +145,19 @@ public class GreenLightManager {
             }
         }
         new PlayerArrayQueueShootTask(this, playerList, endGame, 0, 40);
+    }
+
+    public void spawnArmorStand() {
+        this.armorStand = (ArmorStand) world.spawnEntity(gLightData().getStandLocation(), EntityType.ARMOR_STAND);
+        var headPose = armorStand.getHeadPose();
+        armorStand.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(90), headPose.getZ()));
+        armorStand.setInvulnerable(true);
+        armorStand.addDisabledSlots(EquipmentSlot.HEAD);
+        armorStand.getEquipment().setHelmet(CustomItems.Decoration.KORO_SENSEI.get());
+    }
+
+    public void removeArmorStand() {
+        this.armorStand.remove();
     }
 
     double taxiDistance(Location a, Location b) {

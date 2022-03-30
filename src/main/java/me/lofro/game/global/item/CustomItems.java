@@ -60,4 +60,21 @@ public class CustomItems {
         }
     }
 
+    public enum Decoration implements ItemStackGetter {
+
+        KORO_SENSEI(new ItemBuilder(Material.BRICK)
+                .name(Strings.format("&6Koro Sensei"))
+                .setCustomModelData(5)
+                .build()
+        );
+
+        private final ItemStack itemStack;
+        public ItemStack get() {
+            return itemStack;
+        }
+        Decoration(ItemStack itemStack) {
+            this.itemStack = itemStack;
+        }
+    }
+
 }

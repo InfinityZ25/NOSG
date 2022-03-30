@@ -88,6 +88,8 @@ public class SquidGame extends JavaPlugin {
 
         this.gManager.getTimer().removePlayers();
 
+        if (this.gManager.getGreenLightManager().getArmorStand() != null) this.gManager.getGreenLightManager().removeArmorStand();
+
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }
 

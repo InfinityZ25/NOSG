@@ -3,10 +3,12 @@ package me.lofro.game.games.greenlight.listeners;
 import lombok.Getter;
 import me.lofro.game.games.greenlight.GreenLightManager;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 
@@ -33,6 +35,23 @@ public class GreenLightListener implements Listener {
                 if (player.getLocation().getBlockY() != player.getLocation().getY()) return;
                 e.setCancelled(true);
             }
+        } else if (gLightManager.playerManager().isPlayer(player) && !gLightManager.inCube(location)) {
+            if (gLightManager.isRunning()) {
+                if (player.getGameMode().equals(GameMode.CREATIVE) || player.getGameMode().equals(GameMode.SPECTATOR) || gLightManager.playerManager().isDead(player)) return;
+                movedList.remove(player);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onShift(PlayerToggleSneakEvent e) {
+        Player player = e.getPlayer();
+        Location location = player.getLocation();
+
+        if (!gLightManager.isRunning()) return;
+
+        if (gLightManager.playerManager().isPlayer(player) && gLightManager.inCube(location)) {
+            movedList.add(player);
         }
     }
 

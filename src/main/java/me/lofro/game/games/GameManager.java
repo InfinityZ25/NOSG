@@ -36,10 +36,10 @@ public class GameManager extends Restorable<SquidGame> {
 
     private GData gData;
 
-    private final GreenLightManager greenLightManager;
-    private final HideSeekManager hideSeekManager;
-    private final BackRoomsManager backRoomsManager;
-    private final GlassGameManager glassGameManager;
+    private @Getter final GreenLightManager greenLightManager;
+    private @Getter final HideSeekManager hideSeekManager;
+    private @Getter final BackRoomsManager backRoomsManager;
+    private @Getter final GlassGameManager glassGameManager;
 
     public GameManager(final SquidGame squidInstance) {
         this.squidInstance = squidInstance;
