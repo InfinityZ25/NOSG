@@ -66,6 +66,7 @@ public class GreenLightGame extends BukkitRunnable {
      * @param bool defines whether the light is green or red.
      */
     public void greenLight(Boolean bool) {
+        gLightManager.rotateProgressively(180 ,true, 20);
         if (bool) {
             greenLightTitle("&a¡LUZ VERDE!", "&aPuedes comenzar a moverte.");
 

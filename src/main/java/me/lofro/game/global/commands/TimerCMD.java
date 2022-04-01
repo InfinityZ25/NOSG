@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
-import me.lofro.game.global.utils.extras.BukkitTimer;
+import me.lofro.game.global.utils.timer.BukkitTimer;
 
 @CommandAlias("timer")
 @CommandPermission("admin.perm")

@@ -29,7 +29,7 @@ import me.lofro.game.games.greenlight.listeners.PreLightGameListener;
 import me.lofro.game.games.greenlight.types.GLightData;
 import me.lofro.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
 import me.lofro.game.global.item.CustomItems;
-import me.lofro.game.global.utils.LineVector;
+import me.lofro.game.global.utils.vectors.LineVector;
 import me.lofro.game.global.utils.Locations;
 import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.players.PlayerManager;
@@ -58,7 +58,11 @@ public class GreenLightManager {
 
     private @Getter final World world;
 
-    private @Getter @Setter ArmorStand armorStand;
+    private @Setter @Getter int deathLimit;
+
+    private final @Getter ArrayList<Player> deadPlayers = new ArrayList<>();
+
+    private @Getter @Setter ArmorStand sensei;
 
     public GreenLightManager(GameManager gManager, World world) {
         this.gManager = gManager;
@@ -72,7 +76,7 @@ public class GreenLightManager {
 
         this.greenLightGame = new GreenLightGame(this);
 
-        spawnArmorStand();
+        spawnSensei();
     }
 
     public void preStart() {
@@ -89,12 +93,13 @@ public class GreenLightManager {
         gManager.getSquidInstance().unregisterListener(preGameListener);
     }
 
-    public void runGame(int seconds) {
+    public void runGame(int seconds, int deathLimit) {
         if (this.isRunning)
             throw new IllegalStateException(
                     "The game " + greenLightGame.getClass().getSimpleName() + " is already running.");
 
         this.isRunning = true;
+        this.deathLimit = deathLimit;
 
         gManager.getTimer().start(seconds);
 
@@ -109,9 +114,11 @@ public class GreenLightManager {
     }
 
     public void endGame() {
+        if (lightState.equals(LightState.GREEN_LIGHT)) rotateProgressively(180 ,true, 20);
 
         greenLightGame.cancel();
         this.isRunning = false;
+        this.deadPlayers.clear();
 
         if (this.lightState.equals(LightState.GREEN_LIGHT))
             gManager.getSquidInstance().registerListener(greenLightListener);
@@ -128,8 +135,11 @@ public class GreenLightManager {
 
         gManager.getTimer().end();
 
+        if (lightState.equals(LightState.GREEN_LIGHT)) rotateProgressively(180 ,true, 20);
+
         greenLightGame.cancel();
         this.isRunning = false;
+        this.deadPlayers.clear();
 
         gManager.getSquidInstance().unregisterListener(greenLightListener);
 
@@ -144,6 +154,7 @@ public class GreenLightManager {
         if (!cannonLocations().isEmpty())
             shootCannon(player, 0.25);
         player.setHealth(0);
+        deadPlayers.add(player);
     }
 
     public void shootAll(boolean endGame) {
@@ -159,17 +170,18 @@ public class GreenLightManager {
         new PlayerArrayQueueShootTask(this, playerList, endGame, 0, 40);
     }
 
-    public void spawnArmorStand() {
-        this.armorStand = (ArmorStand) world.spawnEntity(gLightData().getStandLocation(), EntityType.ARMOR_STAND);
-        var headPose = armorStand.getHeadPose();
-        armorStand.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(90), headPose.getZ()));
-        armorStand.setInvulnerable(true);
-        armorStand.addDisabledSlots(EquipmentSlot.HEAD);
-        armorStand.getEquipment().setHelmet(CustomItems.Decoration.KORO_SENSEI.get());
+    public void spawnSensei() {
+        this.sensei = (ArmorStand) world.spawnEntity(gLightData().getSenseiLocation(), EntityType.ARMOR_STAND);
+        var headPose = sensei.getHeadPose();
+
+        sensei.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(-90), headPose.getZ()));
+        sensei.setInvulnerable(true);
+        sensei.addDisabledSlots(EquipmentSlot.HEAD);
+        sensei.getEquipment().setHelmet(CustomItems.Decoration.KORO_SENSEI.get());
     }
 
     public void rotateStand(double degrees, boolean clockwise) {
-        var headPose = armorStand.getHeadPose();
+        var headPose = sensei.getHeadPose();
 
         var deg = Math.toDegrees(headPose.getY());
 
@@ -179,14 +191,14 @@ public class GreenLightManager {
             deg -= degrees;
         }
 
-        armorStand.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(deg), headPose.getZ()));
+        sensei.setHeadPose(new EulerAngle(headPose.getX(), Math.toRadians(deg), headPose.getZ()));
     }
 
-    public void rotateProgressively(double degress, boolean clockwise, int ticks) {
-        // Rotate the armor stand degress/ticks until degrees is reached.
+    public void rotateProgressively(double degrees, boolean clockwise, int ticks) {
+        // Rotate the armor stand degrees/ticks until degrees is reached.
         new BukkitRunnable() {
             int i = 0;
-            double rotationParameter = (degress / (double) ticks);
+            final double rotationParameter = (degrees / (double) ticks);
 
             @Override
             public void run() {
@@ -203,8 +215,8 @@ public class GreenLightManager {
 
     }
 
-    public void removeArmorStand() {
-        this.armorStand.remove();
+    public void removeSensei() {
+        this.sensei.remove();
     }
 
     double taxiDistance(Location a, Location b) {

@@ -1,0 +1,67 @@
+package me.lofro.game.global.utils.scoreboards;
+
+import lombok.Getter;
+import me.lofro.game.SquidGame;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
+
+public class Scoreboards {
+
+    private static final @Getter ScoreboardManager scoreboardManager = SquidGame.getInstance().getServer().getScoreboardManager();
+    private static final @Getter Scoreboard scoreboard = scoreboardManager.getMainScoreboard();
+
+    /**
+     *
+     * Function that sets the name tag name to a player.
+     *
+     * @param displayName display name to set.
+     * @param player player.
+     *
+     */
+    public static void setDisplayName(String displayName, NamedTextColor color, Player player) {
+        var name = player.getName();
+        var team = scoreboard.getTeam(name);
+
+        if (team != null) {
+            team.displayName(Component.text(displayName));
+        } else {
+            team = scoreboard.registerNewTeam(name);
+            team.prefix(Component.text(displayName));
+            team.color(color);
+            team.addPlayer(player);
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        }
+    }
+
+    public static void removeDisplayName(Player player) {
+        var name = player.getName();
+        var team = scoreboard.getTeam(name);
+
+        if (team != null) team.unregister();
+    }
+
+    public static void setGuard(Player player) {
+        var team = scoreboard.getTeam("GUARDS");
+
+        var guardTeam = (team != null) ? team : scoreboard.registerNewTeam("GUARDS");
+        guardTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
+        guardTeam.color(NamedTextColor.RED);
+
+        guardTeam.addPlayer(player);
+    }
+
+    public static void removeGuard(Player player) {
+        var team = scoreboard.getTeam("GUARDS");
+
+        var guardTeam = (team != null) ? team : scoreboard.registerNewTeam("GUARDS");
+        guardTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
+        guardTeam.color(NamedTextColor.RED);
+
+        guardTeam.removePlayer(player);
+    }
+
+}

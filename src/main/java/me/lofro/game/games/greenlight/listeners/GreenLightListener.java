@@ -2,6 +2,7 @@ package me.lofro.game.games.greenlight.listeners;
 
 import lombok.Getter;
 import me.lofro.game.games.greenlight.GreenLightManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,6 +28,8 @@ public class GreenLightListener implements Listener {
         var player = e.getPlayer();
         var location = player.getLocation();
 
+        if (gLightManager.getDeadPlayers().size() >= gLightManager.getDeathLimit()) return;
+
         if (gLightManager.playerManager().isPlayer(player) && gLightManager.inCube(location)) {
             if (gLightManager.isRunning()) {
                 if (player.getGameMode().equals(GameMode.CREATIVE) || player.getGameMode().equals(GameMode.SPECTATOR) || gLightManager.playerManager().isDead(player)) return;
@@ -47,6 +50,8 @@ public class GreenLightListener implements Listener {
     public void onShift(PlayerToggleSneakEvent e) {
         Player player = e.getPlayer();
         Location location = player.getLocation();
+
+        if (gLightManager.getDeadPlayers().size() > gLightManager.getDeathLimit()) return;
 
         if (!gLightManager.isRunning()) return;
 

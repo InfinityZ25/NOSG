@@ -3,6 +3,8 @@ package me.lofro.game.global.utils.rapidinv;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -183,6 +185,12 @@ public class ItemBuilder {
 
     public ItemBuilder setCustomModelData(int data) {
         this.meta.setCustomModelData(data);
+        return this;
+    }
+
+    public ItemBuilder addAttributeModifier (Attribute attribute, AttributeModifier attributeModifier) {
+        this.meta.addAttributeModifier(attribute, attributeModifier);
+        this.item.setItemMeta(this.meta);
         return this;
     }
 

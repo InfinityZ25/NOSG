@@ -17,29 +17,29 @@ import lombok.Getter;
  */
 public class GLightData {
 
-    @Getter @Setter Location cubeUpper, cubeLower, standLocation;
+    @Getter @Setter Location cubeUpper, cubeLower, senseiLocation;
     @Getter List<Location> cannonLocations;
 
     public GLightData() {
         final var baseWorld = Bukkit.getWorlds().get(0);
         this.cubeLower = new Location(baseWorld, -20, -29, -35);
         this.cubeUpper = new Location(baseWorld, -146, 15, 18);
-        this.standLocation = new Location(baseWorld, -152,-28,-9);
+        this.senseiLocation = new Location(baseWorld, -152,-28,-9);
         this.cannonLocations = new ArrayList<>();
     }
 
-    public GLightData(Location cuberUpper, Location cubeLower, Location standLocation, Location... cannonLocations) {
+    public GLightData(Location cuberUpper, Location cubeLower, Location senseiLocation, Location... cannonLocations) {
         this.cubeUpper = cuberUpper;
         this.cubeLower = cubeLower;
-        this.standLocation = standLocation;
+        this.senseiLocation = senseiLocation;
         this.cannonLocations = new ArrayList<>();
         this.cannonLocations.addAll(Arrays.asList(cannonLocations));
     }
 
-    public GLightData(Location cubeUpper, Location cubeLower, Location standLocation, List<Location> cannonLocations) {
+    public GLightData(Location cubeUpper, Location cubeLower, Location senseiLocation, List<Location> cannonLocations) {
         this.cubeUpper = cubeUpper;
         this.cubeLower = cubeLower;
-        this.standLocation = standLocation;
+        this.senseiLocation = senseiLocation;
         this.cannonLocations = cannonLocations;
     }
 }

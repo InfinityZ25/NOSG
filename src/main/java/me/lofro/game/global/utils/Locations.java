@@ -9,12 +9,14 @@ import java.util.List;
 public class Locations {
 
     /**
+     *
      * Boolean that checks whether a location is inside a cube with two locations as radius.
      *
      * @param pos1 first cube location.
      * @param pos2 second cube location.
      * @param point location to check.
      * @return If the given location is inside the cube.
+     *
      */
     public static boolean isInCube(Location pos1, Location pos2, Location point) {
 
@@ -36,12 +38,14 @@ public class Locations {
     }
 
     /**
+     *
      * Function to get the center location of a cube with two locations as radius.
      *
      * @param world of the given locations.
      * @param pos1 first cube location.
      * @param pos2 second cube location.
      * @return Center location of the given cube.
+     *
      */
     public static Location getCubeCenter(World world, Location pos1, Location pos2) {
         int x = ((pos1.getBlockX() + pos2.getBlockX()) / 2);
@@ -51,6 +55,15 @@ public class Locations {
         return new Location(world, x, y, z);
     }
 
+    /**
+     *
+     * Function that gets all the blocks inside a cube radius.
+     *
+     * @param loc1 first location of the cube.
+     * @param loc2 second location of the cube.
+     * @return a list of all the locations inside the cube.
+     *
+     */
     public static List<Location> getBlocksInsideCube(Location loc1, Location loc2) {
         List<Location> locations = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package me.lofro.game.global.utils;
+package me.lofro.game.global.utils.vectors;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -53,7 +53,10 @@ public class GameManagerCMD extends BaseCommand {
         ItemStack itemStack;
         if (gManager.getSquidInstance().getPManager().isGuard(player)) {
             {
-                if (!CustomItems.groups.containsKey(group)) return;
+                if (!CustomItems.groups.containsKey(group)) {
+                    sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl grupo introducido no es válido."));
+                    return;
+                }
 
                 ImmutableMap<String, ItemStack> customItems = CustomItems.groups.get(group);
 
@@ -65,7 +68,7 @@ public class GameManagerCMD extends BaseCommand {
                 player.getInventory().addItem(itemStack);
                 sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl jugador &3" + player.getName() + "&bha recibido el item &3" + item + "&b con éxito."));
             } else {
-                sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl arma introducida no es válida."));
+                sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl item introducida no es válida."));
             }
         } else {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl jugador introducido no es un guardia."));

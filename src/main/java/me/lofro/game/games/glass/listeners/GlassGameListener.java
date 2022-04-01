@@ -25,8 +25,6 @@ public record GlassGameListener(GlassGameManager glassGManager) implements Liste
 
         if (!relativeDown.getType().equals(Material.RED_STAINED_GLASS)) return;
 
-        //TODO ROMPER TODO INSTANTÁNEO.
-
         glassGManager.recursiveBreak(relativeDown, new ArrayList<>(), true, 0, glassGManager.getMaxDepth());
     }
 

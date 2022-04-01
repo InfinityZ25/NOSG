@@ -6,11 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import me.lofro.game.global.events.types.SquidParticipantChangeRoleEvent;
 import me.lofro.game.players.types.IdProvider;
 import me.lofro.game.players.enums.Role;
 import me.lofro.game.players.objects.SquidGuard;
 import me.lofro.game.players.objects.SquidParticipant;
 import me.lofro.game.players.objects.SquidPlayer;
+import org.bukkit.Bukkit;
 
 /**
  * A class that holds all the state of the players in the game.
@@ -199,6 +201,8 @@ public class PData {
             // Remove the guard, add him back to set as player.
             addPlayer(removeGuard(squidGuard).getName());
         }
+
+        Bukkit.getPluginManager().callEvent(new SquidParticipantChangeRoleEvent(participant.player(), role));
 
         return true;
 

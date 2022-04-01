@@ -26,8 +26,8 @@ public class GreenLightCMD extends BaseCommand {
     }
 
     @Subcommand("run")
-    @CommandCompletion("seconds greenLowestTimeBound greenHighestTimeBound redLowestTimeBound redHighestTimeBound")
-    public void runGame(CommandSender sender, int seconds, int greenLowestTimeBound, int greenHighestTimeBound,
+    @CommandCompletion("seconds deathLimit greenLowestTimeBound greenHighestTimeBound redLowestTimeBound redHighestTimeBound")
+    public void runGame(CommandSender sender, int seconds, int deathLimit, int greenLowestTimeBound, int greenHighestTimeBound,
             int redLowestTimeBound, int redHighestTimeBound) {
         if (gLightManager.isRunning()) {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego ya está siendo ejecutado."));
@@ -38,7 +38,7 @@ public class GreenLightCMD extends BaseCommand {
             gLightManager.setRedLowestTimeBound(redLowestTimeBound);
             gLightManager.setRedHighestTimeBound(redHighestTimeBound);
 
-            gLightManager.runGame(seconds);
+            gLightManager.runGame(seconds, deathLimit);
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido iniciado con éxito."));
         }
     }
@@ -97,6 +97,34 @@ public class GreenLightCMD extends BaseCommand {
         }
     }
 
+    @Subcommand("setSenseiLocation")
+    @CommandCompletion("@location")
+    public void setSenseiLocation(CommandSender sender, Location senseiLocation) {
+        if (!gLightManager.isRunning()) {
+            gLightManager.getGManager().gData().greenLightData().setSenseiLocation(senseiLocation);
+
+            gLightManager.removeSensei();
+            gLightManager.spawnSensei();
+
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bLa localización del sensei ha sido modificada correctamente."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar al sensei mientras el juego está siendo ejecutado."));
+        }
+    }
+
+    @Subcommand("spawnSensei")
+    public void spawnSensei(CommandSender sender) {
+        if (!gLightManager.isRunning()) {
+
+            gLightManager.removeSensei();
+            gLightManager.spawnSensei();
+
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl sensei ha sido spawneado correctamente."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar al sensei mientras el juego está siendo ejecutado."));
+        }
+    }
+
     @Subcommand("addCannon")
     @CommandCompletion("@location")
     public void addCannon(CommandSender sender, Location cannon) {
@@ -128,7 +156,6 @@ public class GreenLightCMD extends BaseCommand {
     @Subcommand("rotate")
     public void rotate(CommandSender sender, Integer degrees, Integer overGivenTicks, Boolean clockwise) {
         gLightManager.rotateProgressively(degrees, clockwise, overGivenTicks);
-
     }
 
 }

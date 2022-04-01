@@ -1,4 +1,4 @@
-package me.lofro.game.global.utils.extras;
+package me.lofro.game.global.utils.timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +44,8 @@ public class BukkitTimer extends JTimer {
         var tick = super.tick();
         // Update bar's name.
         bossBar.name(formatTime(tick));
+
+        if (active) Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), "sfx.tic", 2f, 1f));
 
         return tick;
     }

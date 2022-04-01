@@ -135,12 +135,16 @@ public class GlassGameManager {
         for (var f : BlockFace.values()) {
             var block = b.getRelative(f);
             if (block.getType() == Material.AIR || blocks.contains(block)) continue;
-            if (isGlass(block)) {
+            if (isWeakGlass(block)) {
                 blocks.add(block);
                 block.breakNaturally(true);
                 recursiveBreak(block, blocks, false, (depth + 1), maxDepth);
             }
         }
+    }
+
+    public boolean isWeakGlass(Block block) {
+        return block.getType().equals(Material.RED_STAINED_GLASS);
     }
 
     public boolean isGlass(Block block) {

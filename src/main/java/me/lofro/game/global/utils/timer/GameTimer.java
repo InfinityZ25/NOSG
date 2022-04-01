@@ -1,4 +1,4 @@
-package me.lofro.game.games.greenlight.utils.timer;
+package me.lofro.game.global.utils.timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ public class GameTimer extends BukkitRunnable {
             return;
         if (this.seconds >= 0) {
             this.bossBar.name(formatTime(this.seconds--));
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), "sfx.tic", 2f, 1f));
         } else {
             end();
         }

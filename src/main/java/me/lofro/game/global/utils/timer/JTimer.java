@@ -1,4 +1,4 @@
-package me.lofro.game.global.utils.extras;
+package me.lofro.game.global.utils.timer;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

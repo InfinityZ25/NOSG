@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -70,9 +71,13 @@ public class SquidGame extends JavaPlugin {
         this.pManager = new PlayerManager(this);
         this.gManager = new GameManager(this);
 
+        var globalListener = new GlobalListener(pManager, gManager);
+
         registerListeners(
-                new GlobalListener(pManager, gManager)
+                globalListener
         );
+
+        Bukkit.getOnlinePlayers().forEach(p -> globalListener.getHasSeenCredits().put(p.getName(), false));
 
         registerCommands(commandManager,
                 new TimerCMD()
@@ -88,7 +93,11 @@ public class SquidGame extends JavaPlugin {
 
         this.gManager.getTimer().removePlayers();
 
-        if (this.gManager.getGreenLightManager().getArmorStand() != null) this.gManager.getGreenLightManager().removeArmorStand();
+        if (this.gManager.getGreenLightManager().getSensei() != null) this.gManager.getGreenLightManager().removeSensei();
+        if (this.gManager.getPurgeManager().getFoodPlate() != null) this.gManager.getPurgeManager().removeFoodPlate();
+
+        Bukkit.getWorlds().forEach(w -> w.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false));
+        Bukkit.getWorlds().forEach(w -> w.setGameRule(GameRule.KEEP_INVENTORY, true));
 
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));
     }
@@ -110,8 +119,6 @@ public class SquidGame extends JavaPlugin {
     public static MiniMessage miniMessage() {
         return miniMessage;
     }
-
-    // TODO MOVER A OTRA CLASE.
 
     public void registerCommands(PaperCommandManager manager, BaseCommand... commandExecutors) {
         for (BaseCommand commandExecutor : commandExecutors) {

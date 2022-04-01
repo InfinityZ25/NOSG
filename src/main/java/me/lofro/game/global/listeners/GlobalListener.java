@@ -1,27 +1,34 @@
 package me.lofro.game.global.listeners;
 
 import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
+import lombok.Getter;
 import me.lofro.game.SquidGame;
+import me.lofro.game.global.enums.PvPState;
+import me.lofro.game.global.events.types.SquidParticipantChangeRoleEvent;
 import me.lofro.game.global.item.CustomItems;
 import me.lofro.game.global.utils.Sounds;
+import me.lofro.game.global.utils.credits.Credits;
+import me.lofro.game.global.utils.scoreboards.Scoreboards;
 import me.lofro.game.players.enums.Role;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Door;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
@@ -37,12 +44,15 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class GlobalListener implements Listener {
 
     private final PlayerManager pManager;
     private final GameManager gManager;
+
+    private @Getter final HashMap<String, Boolean> hasSeenCredits = new HashMap<>();
 
     public GlobalListener(PlayerManager pManager, GameManager gManager) {
         this.pManager = pManager;
@@ -54,10 +64,14 @@ public class GlobalListener implements Listener {
         var player = e.getPlayer();
         var name = player.getName();
 
+        if (!player.hasPlayedBefore()) player.teleport(new Location(Bukkit.getWorlds().get(0), -23,-49,-19));
+
         e.joinMessage(null);
 
         pManager.guardMessage(Component.text(Strings.format("&7El jugador &6" + name + " &7ha entrado al servidor.")));
         player.playSound(player.getLocation(), "sfx.server_join", 1, 1);
+
+        if (!hasSeenCredits.containsKey(player.getName())) hasSeenCredits.put(name, false);
 
         if (pManager.pData().getParticipant(name) == null) {
             if (player.isOp()) {
@@ -67,6 +81,30 @@ public class GlobalListener implements Listener {
                 pManager.pData().addPlayer(name);
                 player.setGameMode(GameMode.ADVENTURE);
             }
+        }
+
+        if (pManager.isGuard(player)) {
+            Scoreboards.removeDisplayName(player);
+            Scoreboards.setGuard(player);
+
+            player.playerListName(Component.text(ChatColor.GRAY + "" + ChatColor.MAGIC + "#1zzz"));
+
+            player.getEquipment().setChestplate(null);
+            player.getEquipment().setLeggings(null);
+
+            player.getEquipment().setHelmet(CustomItems.Decoration.GUARD_MASK.get());
+        } else {
+            var id = pManager.pData().getPlayer(name).getId();
+
+            Scoreboards.removeGuard(player);
+            Scoreboards.setDisplayName(Strings.format("&3#" + id + "&b "), NamedTextColor.AQUA, player);
+
+            player.playerListName(Component.text(Strings.format("&3#" + id + "&b " + name)));
+
+            player.getEquipment().setHelmet(null);
+
+            player.getEquipment().setChestplate(CustomItems.Decoration.PLAYER_CHESTPLATE.get());
+            player.getEquipment().setLeggings(CustomItems.Decoration.PLAYER_LEGGINGS.get());
         }
 
         var timer = gManager.getTimer();
@@ -88,8 +126,46 @@ public class GlobalListener implements Listener {
         timer.removePlayer(player);
     }
 
-    //TODO PONER EN EVENTO
-    /*@EventHandler
+    @EventHandler
+    public void onParticipantChangeRole(SquidParticipantChangeRoleEvent e) {
+        var player = e.getPlayer();
+        var name = player.getName();
+
+        if (pManager.isGuard(player)) {
+            Scoreboards.removeDisplayName(player);
+            Scoreboards.setGuard(player);
+
+            player.playerListName(Component.text(ChatColor.GRAY + "" + ChatColor.MAGIC + "#1zzz"));
+
+            player.getEquipment().setChestplate(null);
+            player.getEquipment().setLeggings(null);
+
+            player.getEquipment().setHelmet(CustomItems.Decoration.GUARD_MASK.get());
+        } else {
+            var id = pManager.pData().getPlayer(name).getId();
+
+            Scoreboards.removeGuard(player);
+            Scoreboards.setDisplayName(Strings.format("&3#" + id + "&b "), NamedTextColor.AQUA, player);
+
+            player.playerListName(Component.text(Strings.format("&3#" + id + "&b " + name)));
+
+            player.getEquipment().setHelmet(null);
+
+            player.getEquipment().setChestplate(CustomItems.Decoration.PLAYER_CHESTPLATE.get());
+            player.getEquipment().setLeggings(CustomItems.Decoration.PLAYER_LEGGINGS.get());
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() instanceof PlayerInventory playerInventory) {
+            if (e.getSlotType().equals(InventoryType.SlotType.ARMOR)) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void onChat(AsyncChatEvent e) {
         var player = e.getPlayer();
 
@@ -98,8 +174,7 @@ public class GlobalListener implements Listener {
         if (pManager.isGuard(player))
             pManager.guardMessage(Strings.componentFormat("&cGUARDS &8| &7" + player.getName() + " &8| &8&l>> &7"
                     + PlainTextComponentSerializer.plainText().serialize(e.message())));
-
-    }*/
+    }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
@@ -182,21 +257,27 @@ public class GlobalListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e) {
         var player = e.getPlayer();
+        var flags = e.getRespawnFlags();
+
+        player.setGameMode(GameMode.SPECTATOR);
+
+        Bukkit.getLogger().info(String.valueOf(flags));
 
         try {
             PersistentDataContainer persistentDataContainer = Data.getData(player);
-            int[] locationBlocks = Data.get(persistentDataContainer, "DEATH_LOCATION", gManager.getSquidInstance(),
-                    PersistentDataType.INTEGER_ARRAY);
-            float yaw = Data.get(persistentDataContainer, "DEATH_LOCATION_ROTATION", gManager.getSquidInstance(),
-                    PersistentDataType.FLOAT);
-            Location respawnLocation = new Location(player.getWorld(), locationBlocks[0], locationBlocks[1],
-                    locationBlocks[2]);
+            int[] locationBlocks = Data.get(persistentDataContainer, "DEATH_LOCATION", gManager.getSquidInstance(), PersistentDataType.INTEGER_ARRAY);
+            float yaw = Data.get(persistentDataContainer, "DEATH_LOCATION_ROTATION", gManager.getSquidInstance(), PersistentDataType.FLOAT);
+
+            Location respawnLocation = new Location(player.getWorld(), locationBlocks[0], locationBlocks[1], locationBlocks[2]);
+
             respawnLocation.setYaw(yaw);
 
             e.setRespawnLocation(respawnLocation);
         } catch (PlayerIsNotOnlineException ex) {
             ex.printStackTrace();
         }
+            Bukkit.getScheduler().runTaskLater(gManager.getSquidInstance(), () -> Credits.showCredits(player), 1);
+            hasSeenCredits.put(player.getName(), true);
     }
 
     @EventHandler
@@ -257,6 +338,12 @@ public class GlobalListener implements Listener {
                             e.setCancelled(true);
                         }
                     }
+                    case ALL -> {
+                        //Player to guard.
+                        if (dRole == Role.PLAYER && pRole == Role.GUARD) {
+                            e.setCancelled(true);
+                        }
+                    }
                     case NONE -> e.setCancelled(true);
                 }
             } else if (damager instanceof Projectile projectile) {
@@ -282,15 +369,52 @@ public class GlobalListener implements Listener {
                             //Player to guard.
                             if (pShooterRole == Role.PLAYER && pRole == Role.GUARD) {
                                 e.setCancelled(true);
-                                break;
                             }
-
-                            e.setDamage(1000);
+                        }
+                        case ALL -> {
+                            //Player to guard.
+                            if (pShooterRole == Role.PLAYER && pRole == Role.GUARD) {
+                                e.setCancelled(true);
+                            }
                         }
                         case NONE -> e.setCancelled(true);
-                        default -> e.setDamage(1000);
                     }
+                    e.setDamage(1000);
+                } else if (projectile.getShooter() == null) {
+                    e.setDamage(6);
                 }
+            }
+        } else if (entity instanceof ItemFrame itemFrame && damager instanceof Player player) {
+            if (pManager.isPlayer(player)) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent e) {
+        var entity = e.getEntity();
+
+        if (entity instanceof Snowball snowball) {
+            Sounds.playSoundDistance(snowball.getLocation(), 15, "sfx.bottle_break", 1f, 1f);
+
+            if (entity.getShooter() == null) {
+                snowball.getWorld().dropItemNaturally(snowball.getLocation(), CustomItems.Weapons.BROKEN_BOTTLE.get());
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent e) {
+        var player = e.getPlayer();
+        var entity = e.getRightClicked();
+
+        if (entity instanceof ArmorStand armorStand) {
+            if (armorStand.getEquipment().getHelmet() != null) {
+                if (player.getInventory().contains(CustomItems.Decoration.BOTTLE.get()) || player.getInventory().contains(Material.GOLDEN_APPLE)) return;
+
+                player.getInventory().addItem(CustomItems.Decoration.BOTTLE.get());
+                player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
             }
         }
     }
@@ -313,6 +437,34 @@ public class GlobalListener implements Listener {
                     Bukkit.getScheduler().runTask(SquidGame.getInstance(), task -> openDoors(block));
                 }
             }
+        }
+
+        if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            if (e.getHand() == EquipmentSlot.HAND || e.getHand() == EquipmentSlot.OFF_HAND) {
+                var item = e.getItem();
+
+                if (item == null || !gManager.gData().getPvPState().equals(PvPState.ALL)) return;
+
+                if (item.equals(CustomItems.Weapons.BROKEN_BOTTLE.get())) {
+                    var throwableItem = player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+                    ((Projectile) throwableItem).setShooter(player);
+                    throwableItem.setVelocity(player.getEyeLocation().getDirection());
+
+                    player.getEquipment().getItemInMainHand().setAmount(0);
+                } else if (item.equals(CustomItems.Decoration.BOTTLE.get())) {
+                    var throwableItem = player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+                    throwableItem.setVelocity(player.getEyeLocation().getDirection());
+
+                    player.getEquipment().getItemInMainHand().setAmount(0);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onSpawn(CreatureSpawnEvent e) {
+        if (e.getSpawnReason().toString().contains("NATURAL")) {
+            e.setCancelled(true);
         }
     }
 
@@ -340,7 +492,19 @@ public class GlobalListener implements Listener {
 
         if (modelData == CustomItems.Weapons.REVOLVER.get().getItemMeta().getCustomModelData() || modelData == CustomItems.Weapons.SHOTGUN.get().getItemMeta().getCustomModelData()) {
             e.setConsumeItem(false);
-            Sounds.playSoundDistance(loc, 20, "sfx.reload_gun", 1f, 1f);
+            Sounds.playSoundDistance(loc, 30, "sfx.reload_gun", 1f, 1f);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        var player = e.getPlayer();
+
+        if (!e.hasExplicitlyChangedBlock()) return;
+
+        if (hasSeenCredits.get(player.getName())) {
+            player.banPlayer(Strings.format("&c¡Gracias por jugar!"));
+            hasSeenCredits.remove(player.getName());
         }
     }
 
@@ -363,10 +527,10 @@ public class GlobalListener implements Listener {
 
             if (modelData == CustomItems.Weapons.REVOLVER.get().getItemMeta().getCustomModelData()) {
                 e.setConsumeItem(false);
-                Sounds.playSoundDistance(loc, 20, "sfx.gun", 1f, 1f);
+                Sounds.playSoundDistance(loc, 30, "sfx.gun", 1f, 1f);
             } else if (modelData == CustomItems.Weapons.SHOTGUN.get().getItemMeta().getCustomModelData()) {
                 e.setConsumeItem(false);
-                Sounds.playSoundDistance(loc, 20, "sfx.shotgun", 1f, 1f);
+                Sounds.playSoundDistance(loc, 30, "sfx.shotgun", 1f, 1f);
             }
         }
     }
@@ -382,6 +546,7 @@ public class GlobalListener implements Listener {
 
             door.setOpen(!door.isOpen());
             block.setBlockData(door);
+            Sounds.playSoundDistance(block.getLocation(), 10, Sound.BLOCK_IRON_DOOR_OPEN, 1f, 1f);
 
             var hinge = door.getHinge();
             var index = mainFaces.indexOf(door.getFacing());
@@ -392,6 +557,7 @@ public class GlobalListener implements Listener {
                 if (secondDoor.isOpen() == door.isOpen()) return;
                 if (hinge == secondDoor.getHinge()) return;
                 secondDoor.setOpen(!secondDoor.isOpen());
+                Sounds.playSoundDistance(block.getLocation(), 10, Sound.BLOCK_IRON_DOOR_OPEN, 1f, 1f);
                 relative.setBlockData(secondDoor);
             }
         }
