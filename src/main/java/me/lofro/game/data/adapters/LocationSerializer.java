@@ -66,7 +66,7 @@ public class LocationSerializer implements JsonSerializer<Location>, JsonDeseria
     }
 
     /**
-     * Static constructor fro gson.
+     * Static constructor from gson.
      * 
      * @return A new instance of {@link LocationSerializer}.
      */

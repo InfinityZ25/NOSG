@@ -12,7 +12,7 @@ public record HideSeekListener(HideSeekManager hSManager) implements Listener {
     @EventHandler
     public void onHideGameStateChange(ChangeHideStateEvent e) {
         var state = e.getHideGameState();
-        var gData = hSManager.getGManager().gData();
+        var gData = hSManager.getGManager().gameData();
         if (state == HideGameState.HIDE) {
             gData.setPvPState(PvPState.NONE);
         } else {

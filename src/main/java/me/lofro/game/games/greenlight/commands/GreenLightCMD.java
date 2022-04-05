@@ -88,7 +88,7 @@ public class GreenLightCMD extends BaseCommand {
             sender.sendMessage(Strings.format(
                     SquidGame.prefix + "&cNo puedes modificar el cubo mientras el juego está siendo ejecutado."));
         } else {
-            var gLightData = gLightManager.getGManager().gData().greenLightData();
+            var gLightData = gLightManager.getGManager().gameData().greenLightData();
 
             gLightData.setCubeLower(cubeLower);
             gLightData.setCubeUpper(cubeUpper);
@@ -101,7 +101,7 @@ public class GreenLightCMD extends BaseCommand {
     @CommandCompletion("@location")
     public void setSenseiLocation(CommandSender sender, Location senseiLocation) {
         if (!gLightManager.isRunning()) {
-            gLightManager.getGManager().gData().greenLightData().setSenseiLocation(senseiLocation);
+            gLightManager.getGManager().gameData().greenLightData().setSenseiLocation(senseiLocation);
 
             gLightManager.removeSensei();
             gLightManager.spawnSensei();
@@ -132,7 +132,7 @@ public class GreenLightCMD extends BaseCommand {
             sender.sendMessage(Strings.format(
                     SquidGame.prefix + "&cNo puedes modificar los cañones mientras el juego está siendo ejecutado."));
         } else {
-            var gLightData = gLightManager.getGManager().gData().greenLightData();
+            var gLightData = gLightManager.getGManager().gameData().greenLightData();
 
             gLightData.getCannonLocations().add(cannon);
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cañón ha sido añadido correctamente."));
@@ -146,7 +146,7 @@ public class GreenLightCMD extends BaseCommand {
             sender.sendMessage(Strings.format(
                     SquidGame.prefix + "&cNo puedes modificar los cañones mientras el juego está siendo ejecutado."));
         } else {
-            var gLightData = gLightManager.getGManager().gData().greenLightData();
+            var gLightData = gLightManager.getGManager().gameData().greenLightData();
 
             gLightData.getCannonLocations().remove(cannon);
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl cañón ha sido eliminado correctamente."));

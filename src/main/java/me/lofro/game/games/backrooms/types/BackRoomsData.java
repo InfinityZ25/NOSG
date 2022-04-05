@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+/**
+ * A class designed to hold all the stateful data for Backrooms mini-game.
+ */
 public class BackRoomsData {
 
     private @Getter @Setter Location middleCubeLower, middleCubeUpper, cubeLower, cubeUpper;

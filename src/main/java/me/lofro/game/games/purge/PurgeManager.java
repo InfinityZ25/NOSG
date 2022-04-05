@@ -1,7 +1,7 @@
 package me.lofro.game.games.purge;
 
 import lombok.Getter;
-import me.lofro.game.data.types.GData;
+import me.lofro.game.data.types.GameData;
 import me.lofro.game.games.GameManager;
 import me.lofro.game.games.purge.types.PurgeData;
 import me.lofro.game.global.enums.PvPState;
@@ -82,8 +82,8 @@ public class PurgeManager {
         return gManager.getSquidInstance().getPManager();
     }
 
-    public GData gData() {
-        return gManager.gData();
+    public GameData gData() {
+        return gManager.gameData();
     }
 
     public PurgeData purgeData() {

@@ -15,12 +15,12 @@ import lombok.Getter;
  * mini-game.
  *
  */
-public class GLightData {
+public class GreenLightData {
 
-    @Getter @Setter Location cubeUpper, cubeLower, senseiLocation;
-    @Getter List<Location> cannonLocations;
+    private @Getter @Setter Location cubeUpper, cubeLower, senseiLocation;
+    private final @Getter List<Location> cannonLocations;
 
-    public GLightData() {
+    public GreenLightData() {
         final var baseWorld = Bukkit.getWorlds().get(0);
         this.cubeLower = new Location(baseWorld, -20, -29, -35);
         this.cubeUpper = new Location(baseWorld, -146, 15, 18);
@@ -28,7 +28,7 @@ public class GLightData {
         this.cannonLocations = new ArrayList<>();
     }
 
-    public GLightData(Location cuberUpper, Location cubeLower, Location senseiLocation, Location... cannonLocations) {
+    public GreenLightData(Location cuberUpper, Location cubeLower, Location senseiLocation, Location... cannonLocations) {
         this.cubeUpper = cuberUpper;
         this.cubeLower = cubeLower;
         this.senseiLocation = senseiLocation;
@@ -36,7 +36,7 @@ public class GLightData {
         this.cannonLocations.addAll(Arrays.asList(cannonLocations));
     }
 
-    public GLightData(Location cubeUpper, Location cubeLower, Location senseiLocation, List<Location> cannonLocations) {
+    public GreenLightData(Location cubeUpper, Location cubeLower, Location senseiLocation, List<Location> cannonLocations) {
         this.cubeUpper = cubeUpper;
         this.cubeLower = cubeLower;
         this.senseiLocation = senseiLocation;

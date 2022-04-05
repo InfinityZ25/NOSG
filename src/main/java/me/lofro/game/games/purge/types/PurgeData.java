@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+/**
+ * A class designed to hold all the stateful data for Purge mini-game.
+ */
 public class PurgeData {
 
     private @Getter @Setter Location areaLower, areaUpper, foodLocation;

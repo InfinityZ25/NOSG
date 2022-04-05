@@ -48,21 +48,12 @@ public class DeathNoteManager {
 
         gManager.getTimer().start(seconds);
 
-        gManager.gData().setPvPState(PvPState.ONLY_GUARDS);
+        gManager.gameData().setPvPState(PvPState.ONLY_GUARDS);
 
         squidGame().registerListener(deathNoteListener);
     }
 
     public void endGame() {
-        this.isRunning = false;
-        this.winners.clear();
-
-        gManager.getTimer().end();
-
-        squidGame().unregisterListener(deathNoteListener);
-    }
-
-    public void stopGame() {
         this.isRunning = false;
         this.winners.clear();
 
@@ -80,10 +71,10 @@ public class DeathNoteManager {
     }
 
     public DeathNoteData deathNoteData() {
-        return gManager.gData().deathNoteData();
+        return gManager.gameData().deathNoteData();
     }
 
-    public boolean inArea(Location location) {
+    public boolean inGoal(Location location) {
         return Locations.isInCube(deathNoteData().getGoalLower(), deathNoteData().getGoalUpper(), location);
     }
 

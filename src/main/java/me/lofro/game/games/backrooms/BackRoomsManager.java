@@ -150,7 +150,7 @@ public class BackRoomsManager {
     }
 
     public BackRoomsData backRoomsData() {
-        return gManager.gData().backRoomsData();
+        return gManager.gameData().backRoomsData();
     }
 
     public Location cubeLower() {

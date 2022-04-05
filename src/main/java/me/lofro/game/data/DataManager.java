@@ -38,7 +38,7 @@ public class DataManager extends Instantiable<SquidGame> {
     }
 
     /**
-     * Function to save a specific data config.
+     * Function to save an specific data config.
      *
      * @param squidDataType plugin data type.
      */
@@ -50,7 +50,7 @@ public class DataManager extends Instantiable<SquidGame> {
     }
 
     public void printState() {
-        Bukkit.getLogger().info(SquidGame.gson().toJson( instance.getGManager().gData()));
+        Bukkit.getLogger().info(SquidGame.gson().toJson(instance.getGManager().gameData()));
     }
 
     /**

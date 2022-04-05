@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Subcommand;
 import me.lofro.game.SquidGame;
 import me.lofro.game.games.deathnote.DeathNoteManager;
 import me.lofro.game.global.utils.Strings;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("deathNote")
@@ -34,11 +35,24 @@ public class DeathNoteCMD extends BaseCommand {
     @Subcommand("stop")
     public void stopGame(CommandSender sender) {
         if (dNManager.isRunning()) {
-            dNManager.stopGame();
+            dNManager.endGame();
 
             sender.sendMessage(Strings.format(SquidGame.prefix + "&bEl juego ha sido desactivado con éxito."));
         } else {
             sender.sendMessage(Strings.format(SquidGame.prefix + "&cEl juego no está siendo ejecutado."));
+        }
+    }
+
+    @Subcommand("setGoal")
+    @CommandCompletion("@location @location")
+    public void setGoal(CommandSender sender, Location goalLower, Location goalUpper) {
+        if (!dNManager.isRunning()) {
+            dNManager.deathNoteData().setGoalLower(goalLower);
+            dNManager.deathNoteData().setGoalUpper(goalUpper);
+
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&bLa meta del juego ha sido actualizada correctamente."));
+        } else {
+            sender.sendMessage(Strings.format(SquidGame.prefix + "&cNo puedes modificar la meta mientras el juego está siendo ejecutado."));
         }
     }
 

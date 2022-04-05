@@ -36,7 +36,7 @@ public class GlassGameManager {
     private int endTaskID;
     private @Getter int maxDepth = 3;
 
-    private @Getter boolean breakGlass = false;
+    private final @Getter boolean breakGlass = false;
 
     private @Getter Location areaCenter;
     private Vector areaCenter2D;
@@ -156,7 +156,7 @@ public class GlassGameManager {
     }
 
     public GlassGameData glassGameData() {
-        return gManager.gData().glassGameData();
+        return gManager.gameData().glassGameData();
     }
 
     public Location areaLower() {

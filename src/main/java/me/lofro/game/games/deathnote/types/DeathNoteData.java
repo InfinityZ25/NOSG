@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+/**
+ * A class designed to hold all the stateful data for Death note mini-game.
+ */
 public class DeathNoteData {
 
     private @Getter @Setter Location goalLower, goalUpper;

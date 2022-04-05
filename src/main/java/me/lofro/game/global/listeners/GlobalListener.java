@@ -4,7 +4,7 @@ import io.papermc.paper.event.entity.EntityLoadCrossbowEvent;
 import lombok.Getter;
 import me.lofro.game.SquidGame;
 import me.lofro.game.global.enums.PvPState;
-import me.lofro.game.global.events.types.SquidParticipantChangeRoleEvent;
+import me.lofro.game.global.events.SquidParticipantChangeRoleEvent;
 import me.lofro.game.global.item.CustomItems;
 import me.lofro.game.global.utils.Sounds;
 import me.lofro.game.global.utils.credits.Credits;
@@ -52,7 +52,7 @@ public class GlobalListener implements Listener {
     private final PlayerManager pManager;
     private final GameManager gManager;
 
-    private @Getter final HashMap<String, Boolean> hasSeenCredits = new HashMap<>();
+    private final @Getter HashMap<String, Boolean> hasSeenCredits = new HashMap<>();
 
     public GlobalListener(PlayerManager pManager, GameManager gManager) {
         this.pManager = pManager;
@@ -289,23 +289,11 @@ public class GlobalListener implements Listener {
     }
 
     @EventHandler
-    public void onGameModeChange(PlayerGameModeChangeEvent e) {
-        var player = e.getPlayer();
-
-        if (pManager.isPlayer(player)) {
-            if (e.getCause().equals(PlayerGameModeChangeEvent.Cause.COMMAND) || e.getCause().equals(PlayerGameModeChangeEvent.Cause.DEFAULT_GAMEMODE)) {
-                e.setCancelled(true);
-                if (player.isOp()) player.sendMessage(Strings.format("&cTu modo de juego no ha sido actualizado ya que tu rol es PLAYER."));
-            }
-        }
-    }
-
-    @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         var entity = e.getEntity();
         var damager = e.getDamager();
 
-        var pvPState = gManager.gData().getPvPState();
+        var pvPState = gManager.gameData().getPvPState();
 
         if (entity instanceof Player player) {
             var name = player.getName();
@@ -443,7 +431,7 @@ public class GlobalListener implements Listener {
             if (e.getHand() == EquipmentSlot.HAND || e.getHand() == EquipmentSlot.OFF_HAND) {
                 var item = e.getItem();
 
-                if (item == null || !gManager.gData().getPvPState().equals(PvPState.ALL)) return;
+                if (item == null || !gManager.gameData().getPvPState().equals(PvPState.ALL)) return;
 
                 if (item.equals(CustomItems.Weapons.BROKEN_BOTTLE.get())) {
                     var throwableItem = player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);

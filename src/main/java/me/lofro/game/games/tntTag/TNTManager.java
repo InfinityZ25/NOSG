@@ -49,7 +49,7 @@ public class TNTManager {
 
         gManager.getSquidInstance().registerListener(tntListener);
 
-        gManager.gData().setPvPState(PvPState.ALL);
+        gManager.gameData().setPvPState(PvPState.ALL);
 
         randomTag(taggedLimit);
 
@@ -62,7 +62,7 @@ public class TNTManager {
 
         this.taggeds.clear();
 
-        gManager.gData().setPvPState(PvPState.ONLY_GUARDS);
+        gManager.gameData().setPvPState(PvPState.ONLY_GUARDS);
 
         gManager.getSquidInstance().unregisterListener(tntListener);
     }
@@ -77,7 +77,7 @@ public class TNTManager {
         this.taggeds.clear();
         gManager.getTimer().end();
 
-        gManager.gData().setPvPState(PvPState.ONLY_GUARDS);
+        gManager.gameData().setPvPState(PvPState.ONLY_GUARDS);
 
         gManager.getSquidInstance().unregisterListener(tntListener);
     }
@@ -91,6 +91,8 @@ public class TNTManager {
                     .toList();
 
             Player randomTagged;
+
+            if (notTaggeds.isEmpty()) return;
 
             if (notTaggeds.size() < 2) {
                 randomTagged = notTaggeds.get(0);
@@ -111,6 +113,7 @@ public class TNTManager {
 
     public void tag(Player tagged) {
         taggeds.add(tagged);
+        tagged.getInventory().addItem(CustomItems.Decoration.TNT.get());
         tagged.getEquipment().setHelmet(CustomItems.Decoration.TNT.get());
         tagged.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false, false));
         tagged.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0, false, false));
@@ -118,6 +121,7 @@ public class TNTManager {
 
     public void unTag(Player tagged, boolean end) {
         tagged.getEquipment().setHelmet(null);
+        tagged.getInventory().remove(CustomItems.Decoration.TNT.get());
         tagged.removePotionEffect(PotionEffectType.GLOWING);
         tagged.removePotionEffect(PotionEffectType.SPEED);
         if (end) return;
@@ -129,6 +133,7 @@ public class TNTManager {
         taggeds.forEach(t -> {
             t.getInventory().clear();
             t.getWorld().createExplosion(t.getLocation(), 3, false, false);
+            t.setHealth(0);
             Sounds.playSoundDistance(t.getLocation(), 100, Sound.ENTITY_GENERIC_EXPLODE, 5f, 1f);
         });
         Bukkit.getOnlinePlayers().forEach(p -> p.removePotionEffect(PotionEffectType.SPEED));

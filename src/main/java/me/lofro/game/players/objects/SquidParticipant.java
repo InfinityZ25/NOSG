@@ -17,7 +17,7 @@ public class SquidParticipant {
     }
 
     /**
-     * @return the player associated with this participant if online, otherwise null
+     * @return the player associated with this participant if online, otherwise null.
      */
     public Player player() {
         return Bukkit.getPlayer(name);

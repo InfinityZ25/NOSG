@@ -30,7 +30,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
  * Entrypoint for Squid Otaku Game plugin.
  * 
  * 
- * @author <a href="https://github.com/zLofro">lofro</a> - Developer.
+ * @author <a href="https://github.com/zLofro">Lofro</a> - Developer.
  *
  *
  */
@@ -96,7 +96,6 @@ public class SquidGame extends JavaPlugin {
         if (this.gManager.getGreenLightManager().getSensei() != null) this.gManager.getGreenLightManager().removeSensei();
         if (this.gManager.getPurgeManager().getFoodPlate() != null) this.gManager.getPurgeManager().removeFoodPlate();
 
-        Bukkit.getWorlds().forEach(w -> w.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false));
         Bukkit.getWorlds().forEach(w -> w.setGameRule(GameRule.KEEP_INVENTORY, true));
 
         Bukkit.getLogger().info(Strings.format(SquidGame.prefix + "&aEl plugin ha sido desactivado correctamente."));

@@ -1,6 +1,7 @@
-package me.lofro.game.global.events.types;
+package me.lofro.game.global.events;
 
 import lombok.Getter;
+import me.lofro.game.global.events.types.BaseEvent;
 import me.lofro.game.players.enums.Role;
 import org.bukkit.entity.Player;
 

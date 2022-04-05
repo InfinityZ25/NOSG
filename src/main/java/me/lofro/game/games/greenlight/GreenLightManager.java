@@ -26,7 +26,7 @@ import me.lofro.game.games.GameManager;
 import me.lofro.game.games.greenlight.enums.LightState;
 import me.lofro.game.games.greenlight.listeners.GreenLightListener;
 import me.lofro.game.games.greenlight.listeners.PreLightGameListener;
-import me.lofro.game.games.greenlight.types.GLightData;
+import me.lofro.game.games.greenlight.types.GreenLightData;
 import me.lofro.game.games.greenlight.utils.tasks.PlayerArrayQueueShootTask;
 import me.lofro.game.global.item.CustomItems;
 import me.lofro.game.global.utils.vectors.LineVector;
@@ -224,7 +224,7 @@ public class GreenLightManager {
     }
 
     private Location closestCannon(Location loc) {
-        var cannonIter = gManager.gData().greenLightData().getCannonLocations().iterator();
+        var cannonIter = gManager.gameData().greenLightData().getCannonLocations().iterator();
         var greatestDistance = Double.MAX_VALUE;
         Location closestCannon = null;
 
@@ -283,8 +283,8 @@ public class GreenLightManager {
         return gLightData().getCannonLocations();
     }
 
-    private GLightData gLightData() {
-        return this.gManager.gData().greenLightData();
+    private GreenLightData gLightData() {
+        return this.gManager.gameData().greenLightData();
     }
 
 }

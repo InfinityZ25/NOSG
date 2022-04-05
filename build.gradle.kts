@@ -79,4 +79,5 @@ bukkit {
     apiVersion = "1.18"
     main = "me.lofro.game.SquidGame"
     author = "Lofro"
+    website = "https://github.com/zLofro"
 }

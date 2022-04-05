@@ -9,6 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Util class that manages the Persistent Data Containers from Bukkit.org.
+ *
+ * @author <a href="https://github.com/Clipi-12">Clipi</a>
+ */
 public class Data {
     public static NamespacedKey key(String key, JavaPlugin javaPlugin) {
         return new NamespacedKey(javaPlugin, key);

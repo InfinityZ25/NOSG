@@ -1,7 +1,7 @@
 package me.lofro.game.players;
 
 import me.lofro.game.SquidGame;
-import me.lofro.game.data.types.PData;
+import me.lofro.game.data.types.PlayerData;
 import me.lofro.game.data.utils.JsonConfig;
 import me.lofro.game.global.interfaces.Restorable;
 import org.bukkit.Bukkit;
@@ -16,7 +16,7 @@ import me.lofro.game.players.commands.PlayerManagerCMD;
  *
  */
 public class PlayerManager extends Restorable<SquidGame> {
-    private PData playerData;
+    private PlayerData playerData;
 
     /**
      * Constructor for Bukkit instantiation.
@@ -36,12 +36,12 @@ public class PlayerManager extends Restorable<SquidGame> {
     public PlayerManager() {
         super();
         // initialize pData
-        this.playerData = new PData();
+        this.playerData = new PlayerData();
     }
 
     @Override
     protected void restore(JsonConfig jsonConfig) {
-        this.playerData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), PData.class);
+        this.playerData = SquidGame.gson().fromJson(jsonConfig.getJsonObject(), PlayerData.class);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PlayerManager extends Restorable<SquidGame> {
     /**
      * @return The Pdata object.
      */
-    public PData pData() {
+    public PlayerData pData() {
         return playerData;
     }
 

@@ -106,7 +106,7 @@ public class BackRoomsListener implements Listener {
         var state = e.getBackRoomsState();
 
         if (state == BackRoomsState.PRE_START || state == BackRoomsState.SAFE) {
-            bRManager.gameManager().gData().setPvPState(PvPState.NONE);
+            bRManager.gameManager().gameData().setPvPState(PvPState.NONE);
         } else if (state == BackRoomsState.NONE) {
             Bukkit.getOnlinePlayers()
                     .stream()
@@ -114,9 +114,9 @@ public class BackRoomsListener implements Listener {
                             && bRManager.playerManager().isDead(p))
                     .forEach(p -> p.removePotionEffect(PotionEffectType.BLINDNESS));
 
-            bRManager.gameManager().gData().setPvPState(PvPState.ONLY_GUARDS);
+            bRManager.gameManager().gameData().setPvPState(PvPState.ONLY_GUARDS);
         } else {
-            bRManager.gameManager().gData().setPvPState(PvPState.ONLY_GUARDS);
+            bRManager.gameManager().gameData().setPvPState(PvPState.ONLY_GUARDS);
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
-import me.lofro.game.global.events.types.SquidParticipantChangeRoleEvent;
+import me.lofro.game.global.events.SquidParticipantChangeRoleEvent;
 import me.lofro.game.players.types.IdProvider;
 import me.lofro.game.players.enums.Role;
 import me.lofro.game.players.objects.SquidGuard;
@@ -18,18 +18,17 @@ import org.bukkit.Bukkit;
  * A class that holds all the state of the players in the game.
  *
  */
-public class PData {
+public class PlayerData {
 
-    private @Getter
-    IdProvider idProvider;
+    private final @Getter IdProvider idProvider;
     private Map<String, SquidParticipant> participants = new ConcurrentHashMap<>();
 
-    public PData() {
+    public PlayerData() {
         this.idProvider = new IdProvider();
 
     }
 
-    public PData(IdProvider idProvider, Map<String, SquidParticipant> participants) {
+    public PlayerData(IdProvider idProvider, Map<String, SquidParticipant> participants) {
         this.idProvider = idProvider;
         this.participants = participants;
     }
@@ -135,10 +134,9 @@ public class PData {
         if (squidParticipant == null)
             throw new IllegalArgumentException("Player " + name + " is not a SquidParticipant.");
         // Short-circut if not a player
-        if (!(squidParticipant instanceof SquidPlayer))
+        if (!(squidParticipant instanceof SquidPlayer sPlayer))
             throw new IllegalArgumentException("Player " + name + " is not a SquidPlayer.");
 
-        var sPlayer = (SquidPlayer) squidParticipant;
         return removePlayer(sPlayer);
     }
 
@@ -164,10 +162,9 @@ public class PData {
         if (squidParticipant == null)
             throw new IllegalArgumentException("Player " + name + " is not a SquidParticipant.");
         // Short-circut if not a guard
-        if (!(squidParticipant instanceof SquidGuard))
+        if (!(squidParticipant instanceof SquidGuard sGuard))
             throw new IllegalArgumentException("Player " + name + " is not a SquidGuard.");
 
-        var sGuard = (SquidGuard) squidParticipant;
         participants.remove(name);
         return sGuard;
     }

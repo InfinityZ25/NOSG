@@ -25,7 +25,7 @@ public class GameManagerCMD extends BaseCommand {
 
     @Subcommand("pvp")
     public void setPvP(CommandSender sender, PvPState pvPState) {
-        var gData = gManager.gData();
+        var gData = gManager.gameData();
 
         if (!pvPState.equals(gData.getPvPState())) {
             gData.setPvPState(pvPState);
@@ -37,7 +37,7 @@ public class GameManagerCMD extends BaseCommand {
 
     @Subcommand("day")
     public void setDay(CommandSender sender, Day day) {
-        var gData = gManager.gData();
+        var gData = gManager.gameData();
 
         if (!day.equals(gData.getDay())) {
             gData.setDay(day);
